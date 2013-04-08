@@ -1,4 +1,4 @@
 dash4twitter
 ============
 
-A dashboard application for realtime twitter analysis
+A dashboard application for twitter analysis
