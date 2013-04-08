@@ -1,0 +1,175 @@
+
+<!DOCTYPE html>
+<meta charset="utf-8">
+<script src="http://mbostock.github.com/d3/d3.v2.js?2.8.1"></script>
+<script src="//ajax.googleapis.com/ajax/libs/jquery/1.9.1/jquery.min.js"></script>
+<style>
+
+.background {
+  fill: none;
+  pointer-events: all;
+}
+
+#circle{
+  fill: #1B70E0;
+  stroke: #fff;
+  stroke-width: 1px;
+}
+
+#circle.retweet {
+  fill: #E01B6A;
+}
+
+#states path {
+  fill: #CCC;
+  stroke: #fff;
+  stroke-width: 1.5px;
+}
+
+#states path:hover {
+  stroke: #fff;
+  fill: #9E9E9E;
+}
+
+</style>
+<body>
+<svg></svg>
+<script>
+
+function getRandomArbitary (min, max) {
+    return Math.random() * (max - min) + min;
+}
+
+var width = 1280,
+    height = 800;
+
+var projection = d3.geo.albersUsa()
+    .scale(width)
+    .translate([width / 2, height / 2]);
+
+var path = d3.geo.path()
+    .projection(projection);
+
+var zoom = d3.behavior.zoom()
+    .translate(projection.translate())
+    .scale(projection.scale())
+    .scaleExtent([height, 8 * height])
+    .on("zoom", zoom);
+
+var svg = d3.select("svg")
+    .attr("width", width)
+    .attr("height", height);
+
+var states = svg.append("g")
+    .attr("id", "states")
+    .call(zoom);
+
+//var circles = svg.append("svg:g")
+//    .attr("id", "circles");
+
+function pausecomp(millis)
+{
+  var date = new Date();
+  var curDate = null;
+  do { curDate = new Date(); }
+  while(curDate-date < millis);
+}
+
+function addTweet(coordinates, retweet, sustain){
+  sustain = sustain || false;
+  var size = 5;
+  var types = ["tweet", "retweet"]
+  var tweet = svg.append('svg:circle')
+     .attr('cx', coordinates[0])
+     .attr('cy', coordinates[1])
+     .style('r', 0)
+     .attr("id", "circle")
+     .attr("class", types[parseInt(retweet)])
+     .style("opacity", 1)
+     .transition()
+     .duration(150)
+     .attr('r', size);
+  if(!sustain) tweet.transition()
+     .duration(size*400)
+     .delay(150)
+     .style("opacity", 0)
+     .attr('r', 0)
+     .remove();
+}
+
+var tweetIndex = 0;
+var tweets;
+var tweetPlayer;
+
+function clearTweets(){
+  d3.selectAll("circle").each(function(){
+    $(this).remove();    
+  });
+}
+
+function resetTweets(){
+  clearTimeout(tweetPlayer);
+  tweetIndex = 0;
+}
+
+var playTweets = function(){
+  if(tweetIndex == 0) clearTweets();
+  var coor = tweets[tweetIndex].split(" ");
+  addTweet(projection([parseFloat(coor[1]), parseFloat(coor[0])]), coor[3]);
+  tweetIndex++;
+  if(tweetIndex < tweets.length) tweetPlayer = setTimeout(playTweets, 0.01*parseFloat(coor[2]));
+  else{ resetTweets(); tweetPlayer = setTimeout(playTweets, 50);}
+}
+
+function displayAllTweets(){
+  resetTweets();
+  clearTweets();
+  for(var i = 0; i < tweets.length; i++)
+  {
+    var coor = tweets[i].split(" ");
+    addTweet(projection([parseFloat(coor[1]), parseFloat(coor[0])]), coor[3], true);
+  }
+}
+
+$(document).ready(function() {
+  $.get("geoData.txt", function(data) {
+      tweets = data.split("\n");
+  });
+});
+
+states.append("rect")
+    .attr("class", "background")
+    .attr("width", width)
+    .attr("height", height);
+
+d3.json("us-states.json", function(json) {
+  states.selectAll("path")
+      .data(json.features)
+    .enter().append("path")
+      .attr("d", path)
+      .on("click", click);
+});
+/*
+function click(d) {
+  var centroid = path.centroid(d),
+      translate = projection.translate();
+
+  projection.translate([
+    translate[0] - centroid[0] + width / 2,
+    translate[1] - centroid[1] + height / 2
+  ]);
+
+  zoom.translate(projection.translate());
+
+  states.selectAll("path").transition()
+      .duration(1000)
+      .attr("d", path);
+}
+
+function zoom() {
+  projection.translate(d3.event.translate).scale(d3.event.scale);
+  states.selectAll("path").attr("d", path);
+}
+*/
+</script>
+
