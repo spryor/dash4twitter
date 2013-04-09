@@ -119,7 +119,7 @@ text-transform: capitalize;
 margin-left: 10px;
 border-top-left-radius: 20px;
 border-bottom-left-radius: 20px;
-background: url("play-icon.png") center right;
+/*background: #1063C2 url("play-icon.png") center center;*/
 }
 
 #resetTweets
@@ -130,7 +130,7 @@ border-bottom-right-radius: 20px;
 
 #playTweets:hover, #resetTweets:hover
 {
-background: #094F9E;
+background-color: #094F9E;
 }
 
 #playTweets.active
