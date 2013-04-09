@@ -1,0 +1,40 @@
+<!DOCTYPE html>
+<html>
+<header>
+  <meta charset="utf-8">
+  <link rel="stylesheet" type="text/css" href="css/styling.css" />
+  <script src="//ajax.googleapis.com/ajax/libs/jquery/1.9.1/jquery.min.js"></script>
+  <script src="scripts/js.js"></script>
+</header>
+<body>
+<div class="banner">
+  <div class="optionList">
+    <a href="#" class="option selected">Tweets</a>
+    <span class="info"><span class="tweet">Tweet</span>/<span class="retweet">Retweet</span></span>
+    <a href="#" class="option">Trending</a>
+    <a href="#" class="option">Sentiment</a>
+    <a href="#" id="playTweets">Play</a>
+    <a href="#" id="resetTweets">Show All</a>
+  </div>
+</div>
+<div class="sideBar">
+  <div class="mentionList">
+    <p>Trending</p>
+    <a href="#">#askeconomist</a>
+    <a href="#">#TGIF</a>
+    <a href="#">#BackIn7thGrade</a>
+    <a href="#">#GoogleFiber</a>
+  </div>
+</div>
+<iframe src="geoVis.html" marginwidth="0" marginheight="0" scrolling="no" id="usmap"></iframe>
+<div class="fadeBox">
+</div>
+<div class="fadeMessageBox">
+  <div class="container">
+    <span class="status">Loading...</span>
+    <span class="details">Initializing stream.</span>
+  </div>
+</div>
+
+</body>
+</html>
