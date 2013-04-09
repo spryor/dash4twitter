@@ -119,6 +119,7 @@ text-transform: capitalize;
 margin-left: 10px;
 border-top-left-radius: 20px;
 border-bottom-left-radius: 20px;
+background: url("play-icon.png") center right;
 }
 
 #resetTweets
