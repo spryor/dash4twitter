@@ -5,6 +5,11 @@
 <script src="//ajax.googleapis.com/ajax/libs/jquery/1.9.1/jquery.min.js"></script>
 <style>
 
+body
+{
+position: relative;
+}
+
 .background {
   fill: none;
   pointer-events: all;
@@ -31,8 +36,22 @@
   fill: #9E9E9E;
 }
 
+#counterBlock
+{
+absolute: absolute;
+display: block;
+top: 10px;
+left: 10px;
+padding: 5px;
+font-size: 0.8em;
+font-family: arial;
+color: #757575;
+text-align: right;
+}
+
 </style>
 <body>
+<div id="counterBlock">Tweets <span id="tindex"></span>/<span id="tweetCount"></span></div>
 <svg></svg>
 <script>
 
@@ -110,10 +129,12 @@ function clearTweets(){
 function resetTweets(){
   clearTimeout(tweetPlayer);
   tweetIndex = 0;
+  $("#tindex").html(tweetIndex);
 }
 
 var playTweets = function(){
   if(tweetIndex == 0) clearTweets();
+  $("#tindex").html(tweetIndex);
   var coor = tweets[tweetIndex].split(" ");
   addTweet(projection([parseFloat(coor[1]), parseFloat(coor[0])]), coor[3]);
   tweetIndex++;
@@ -129,11 +150,14 @@ function displayAllTweets(){
     var coor = tweets[i].split(" ");
     addTweet(projection([parseFloat(coor[1]), parseFloat(coor[0])]), coor[3], true);
   }
+  $("#tindex").html(tweets.length);
 }
 
 $(document).ready(function() {
   $.get("geoData.txt", function(data) {
       tweets = data.split("\n");
+      $("#tindex").html(tweetIndex);
+      $("#tweetCount").html(tweets.length);
   });
 });
 
