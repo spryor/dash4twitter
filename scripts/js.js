@@ -59,13 +59,16 @@ function useSentiment(){
 }
 
 function changeLabels(contents){
-  $(".sideBar .labels").hide("fast", function(){
-    $(this).html(contents).show("fast");
+  var i = 0; 
+  $(".sideBar .labels").html(contents).children().each(function(){
+    var current = $(this);
+    setTimeout(function(){ current.animate({left: 0}, "fast"); }, i*150);
+    i++;
   });
 }
 
 function showTweetLabels(){
-  changeLabels("<p class=\"Tweet\">Tweet</p><p class=\"retweet\">Retweet</p>");
+  changeLabels("<p class=\"tweet\">Tweet</p><p class=\"retweet\">Retweet</p>");
 }
 
 function showSentimentLabels(){
@@ -74,11 +77,11 @@ function showSentimentLabels(){
 
 $(document).ready(function(){
   $iframe = $("#usmap");
+  showTweetLabels();
   $("#usmap").load(function(){
     $(".fadeMessageBox .status").addClass("complete").html("Complete!");
     setTimeout(function() { removeFade(); }, 500);
-    $("#playTweets").click();
-    showTweetLabels();
+    //$("#playTweets").click();
   });
 
   $(".optionList a.option").click(function(){

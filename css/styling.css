@@ -119,7 +119,6 @@ text-transform: capitalize;
 margin-left: 10px;
 border-top-left-radius: 20px;
 border-bottom-left-radius: 20px;
-/*background: #1063C2 url("play-icon.png") center center;*/
 }
 
 #resetTweets
@@ -151,43 +150,50 @@ margin: 5px;
 margin-right: 3px;
 width: 140px;
 float: left;
+position: relative;
 }
 
 .labels p
 {
-display: none;
-padding: 15px 2px;
-text-align: center;
+display: block;
+padding: 10px 2px;
+padding-bottom: 5px;
+text-align: left;
 text-decoration: none;
-color: #fff;
-background: #292929;
+/*background: #292929;*/
 margin: 0px;
 margin-bottom: 2px;
-width: 138px;
-text-transform: uppercase;
+text-transform: capitalize;
 font-weight: bold;
 letter-spacing: 1px;
-font-size: 1.1em;
+font-size: 1em;
+border-bottom: 4px solid #000;
+position: relative;
+left: -200px;
 }
 
 .labels p.tweet
 {
-background: #1B70E0;
+color: #1B70E0;
+border-color: #1B70E0;
 }
 
 .labels p.retweet
 {
-background: #E01B6A;
+color: #E01B6A;
+border-color: #E01B6A;
 }
 
 .labels p.pos
 {
-background: #6CC41A;
+color: #6CC41A;
+border-color: #6CC41A;
 }
 
 .labels p.neg
 {
-background: #C41A2D;
+color: #C41A2D;
+border-color: #C41A2D;
 }
 
 .fadeBox
