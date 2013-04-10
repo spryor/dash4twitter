@@ -1,4 +1,3 @@
-
 <!DOCTYPE html>
 <meta charset="utf-8">
 <script src="http://mbostock.github.com/d3/d3.v2.js?2.8.1"></script>
@@ -11,29 +10,42 @@ position: relative;
 }
 
 .background {
-  fill: none;
-  pointer-events: all;
+fill: none;
+pointer-events: all;
 }
 
 #circle{
-  fill: #1B70E0;
-  stroke: #fff;
-  stroke-width: 1px;
+fill: #1B70E0;
+stroke: #fff;
+stroke-width: 1px;
 }
 
 #circle.retweet {
-  fill: #E01B6A;
+fill: #E01B6A;
+}
+
+#circle.pos {
+fill: #6CC41A;
+}
+
+#circle.neg {
+fill: #C41A2D;
+}
+
+#circle.neutral {
+fill: #9C9C9C;
+display: none;
 }
 
 #states path {
-  fill: #CCC;
-  stroke: #fff;
-  stroke-width: 1.5px;
+fill: #CCC;
+stroke: #fff;
+stroke-width: 1.5px;
 }
 
 #states path:hover {
-  stroke: #fff;
-  fill: #9E9E9E;
+stroke: #fff;
+fill: #9E9E9E;
 }
 
 #counterBlock
@@ -94,16 +106,22 @@ function pausecomp(millis)
   while(curDate-date < millis);
 }
 
-function addTweet(coordinates, retweet, sustain){
+var tweetIndex = 0;
+var tweets;
+var tweetPlayer;
+var typeOffset = 3;
+var useType = 0; //0 if tweets, 2 if sentiment
+var types = ["tweet", "retweet", "pos", "neg", "neutral"]
+
+function addTweet(coordinates, type, sustain){
   sustain = sustain || false;
   var size = 5;
-  var types = ["tweet", "retweet"]
   var tweet = svg.append('svg:circle')
      .attr('cx', coordinates[0])
      .attr('cy', coordinates[1])
      .style('r', 0)
      .attr("id", "circle")
-     .attr("class", types[parseInt(retweet)])
+     .attr("class", types[useType+parseInt(type)])
      .style("opacity", 1)
      .transition()
      .duration(150)
@@ -116,9 +134,16 @@ function addTweet(coordinates, retweet, sustain){
      .remove();
 }
 
-var tweetIndex = 0;
-var tweets;
-var tweetPlayer;
+function useTweets(){
+  useType = 0;
+  typeOffset = 3;
+}
+
+
+function useSentiment(){
+  useType = 2;
+  typeOffset = 4;
+}
 
 function clearTweets(){
   d3.selectAll("circle").each(function(){
@@ -136,7 +161,7 @@ var playTweets = function(){
   if(tweetIndex == 0) clearTweets();
   $("#tindex").html(tweetIndex);
   var coor = tweets[tweetIndex].split(" ");
-  addTweet(projection([parseFloat(coor[1]), parseFloat(coor[0])]), coor[3]);
+  addTweet(projection([parseFloat(coor[1]), parseFloat(coor[0])]), coor[typeOffset]);
   tweetIndex++;
   if(tweetIndex < tweets.length) tweetPlayer = setTimeout(playTweets, 0.01*parseFloat(coor[2]));
   else{ resetTweets(); tweetPlayer = setTimeout(playTweets, 50);}
@@ -148,13 +173,13 @@ function displayAllTweets(){
   for(var i = 0; i < tweets.length; i++)
   {
     var coor = tweets[i].split(" ");
-    addTweet(projection([parseFloat(coor[1]), parseFloat(coor[0])]), coor[3], true);
+    addTweet(projection([parseFloat(coor[1]), parseFloat(coor[0])]), coor[typeOffset], true);
   }
   $("#tindex").html(tweets.length);
 }
 
 $(document).ready(function() {
-  $.get("geoData.txt", function(data) {
+  $.get("geoData_2.txt", function(data) {
       tweets = data.split("\n");
       $("#tindex").html(tweetIndex);
       $("#tweetCount").html(tweets.length);
@@ -168,32 +193,10 @@ states.append("rect")
 
 d3.json("us-states.json", function(json) {
   states.selectAll("path")
-      .data(json.features)
+    .data(json.features)
     .enter().append("path")
-      .attr("d", path)
-      .on("click", click);
+    .attr("d", path)
+    .on("click", click);
 });
-/*
-function click(d) {
-  var centroid = path.centroid(d),
-      translate = projection.translate();
-
-  projection.translate([
-    translate[0] - centroid[0] + width / 2,
-    translate[1] - centroid[1] + height / 2
-  ]);
-
-  zoom.translate(projection.translate());
-
-  states.selectAll("path").transition()
-      .duration(1000)
-      .attr("d", path);
-}
-
-function zoom() {
-  projection.translate(d3.event.translate).scale(d3.event.scale);
-  states.selectAll("path").attr("d", path);
-}
-*/
 </script>
 
