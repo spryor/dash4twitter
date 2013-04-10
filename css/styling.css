@@ -126,7 +126,9 @@ text-shadow: 1px #fff;
 {
 background: #3B3B3B;
 color: #fff;
-padding: 9px 0px;
+padding: 0px;
+padding-top: 12px;
+padding-bottom: 6px;
 margin: 7px 0px;
 width: 90px;
 font-size: 0.8em;
