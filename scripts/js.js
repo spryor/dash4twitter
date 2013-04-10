@@ -1,5 +1,5 @@
 function removeFade() {
-  $(".fadeMessageBox .container").animate({left: -1000}, "normal", function(){
+  $(".fadeMessageBox .container").animate({left: -1500}, "normal", function(){
     $(".fadeMessageBox").fadeOut("normal", function(){
       $(this).remove();
       $(".fadeBox").fadeOut("normal", function(){
@@ -80,7 +80,8 @@ $(document).ready(function(){
   showTweetLabels();
   $("#usmap").load(function(){
     $(".fadeMessageBox .status").addClass("complete").html("Complete!");
-    setTimeout(function() { removeFade(); }, 500);
+    $(".fadeMessageBox .container div").animate({opacity: 1, left: 300}, "normal");
+    setTimeout(function() { removeFade(); }, 1200);
     //$("#playTweets").click();
   });
 
