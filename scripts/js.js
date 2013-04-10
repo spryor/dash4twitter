@@ -48,12 +48,28 @@ function useTweets(){
   changeTypes();
   $iframe[0].contentWindow.useTweets();
   clearTweets();
+  showTweetLabels();
 }
 
 function useSentiment(){ 
   changeTypes();
   $iframe[0].contentWindow.useSentiment();
   clearTweets();
+  showSentimentLabels();
+}
+
+function changeLabels(contents){
+  $(".sideBar .labels").hide("fast", function(){
+    $(this).html(contents).show("fast");
+  });
+}
+
+function showTweetLabels(){
+  changeLabels("<p class=\"Tweet\">Tweet</p><p class=\"retweet\">Retweet</p>");
+}
+
+function showSentimentLabels(){
+  changeLabels("<p class=\"pos\">Positive</p><p class=\"neg\">Negative</p>");
 }
 
 $(document).ready(function(){
@@ -62,6 +78,7 @@ $(document).ready(function(){
     $(".fadeMessageBox .status").addClass("complete").html("Complete!");
     setTimeout(function() { removeFade(); }, 500);
     $("#playTweets").click();
+    showTweetLabels();
   });
 
   $(".optionList a.option").click(function(){
