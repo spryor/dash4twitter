@@ -2,9 +2,6 @@ import collection.mutable.HashMap
 
 val stopwords = io.Source.fromFile("stopwords.english").getLines.toSet
 
-
-//.replaceAll("""["”“><\[]/\\()¡*,#@.?!]+""", " ")
-//.replaceAll("""\s[^a-zA-Z]+\s""", " ")
 def tokenize(sentence: String) = sentence
   .replaceAll("""<(mention|link|hashtag)>|rt\s""", " ")
   .replaceAll("[^a-zA-Z0-9\\s]", " ")
@@ -23,17 +20,10 @@ val lines = io.Source
     .take(100000)
 
 val words = lines.flatten
-  //.filter(_.length > 4)
   .groupBy(w => w)
   .mapValues(_.length.toDouble)
   .toMap
-  //.toList
-  //.sortBy(_._2)
-  //.reverse
 
-/*
-words.drop(900).take(10).foreach{case (word, _) => println(word)}
-*/
 var graph = HashMap[String,HashMap[String, Double]]()
 val greatestOccurence = HashMap[String,Double]().withDefaultValue(0.0)
 
