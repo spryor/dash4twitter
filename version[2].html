@@ -1,0 +1,579 @@
+<!DOCTYPE html>
+<html>
+<header>
+  <meta charset="utf-8">
+  <title>dash4twitter</title>
+  <script src="http://ajax.googleapis.com/ajax/libs/jquery/1.9.1/jquery.min.js"></script>
+  <script src="http://code.jquery.com/ui/1.10.2/jquery-ui.js"></script>
+<script>
+
+function showCommands() {
+  var i = 1;
+  $("#nav .commandList a").each(function(){
+    var current = $(this);
+    current.css({left: -20,opacity: 0}).show();
+    setTimeout(function(){ current.animate({left: 0,opacity: 1}, "fast"); }, i*100);
+    i++;
+  });
+}
+
+function addSelect(loc, action, exitAction) {
+  $(loc).click(function(){
+    if(!$(this).hasClass("selected")){
+      $(loc+".selected").removeClass("selected");
+      $(this).addClass("selected");
+      action($(this));
+    } else {
+      $(this).removeClass("selected");
+      if(exitAction) exitAction(function(){});
+    }
+    return false;
+  });
+}
+
+function keywordAction(clicked) {
+  action = clicked.attr("href")
+  target = action.substring(1, action.length)
+  target = target.substring(0, target.length - 1)
+  if(action == "#all"){
+    $(".resultBox.keywords .results a").animate({opacity:1}, "fast");
+  } else {
+    $(".resultBox.keywords .results a:not(."+target+")").animate({opacity:.3}, "fast")
+    $(".resultBox.keywords .results a."+target).animate({opacity:1}, "fast");
+  }
+}
+
+function showResultBox() {
+  $(".resultContainer").css({opacity:1});
+  $(".resultContainer").show("fast", function(){
+    $("#content .resultBox").animate({left: 0}, "normal", function(){
+      $(".resultContainer").css({overflow: "visible"});
+    });
+  });
+}
+
+function hideResultBox(callback) {
+  $(".resultContainer").stop(true, true).css({overflow: "hidden",opacity:0}).hide(0, function(){
+    $("#content .resultBox").css({left: -1200});
+    callback();
+  });
+  /*
+  $(".resultContainer").css({overflow: "hidden"}).animate({opacity:0});
+  $("#content .resultBox").animate({left: -1200}, "normal", function(){
+    $(".resultContainer").hide("fast", callback);
+  });
+  */
+}
+
+function navAction(clicked) {
+  hideResultBox(showResultBox);
+}
+
+$(document).ready(function(){
+  addSelect("#nav .commandList a", navAction, hideResultBox);
+  addSelect(".resultBox .actions ul a", keywordAction);
+  $("#content .resultBox").animate({left: 0});
+  $("#searchKeywordForm").one("submit", showCommands);
+  $("#content .resultBox.keywords .results a").draggable({
+    revert: false, // when not dropped, the item will revert back to its initial position
+    helper: "clone",
+    cursor: "move"
+  });
+  $( ".search_input").droppable({
+    activeClass: "query-state-ha",
+    hoverClass: "query-state-hover",
+    drop: function( event, ui ) {
+      contents = $(this).val().trim()
+      dragged = ui.draggable.html().trim()
+      if(contents != ""){ dragged = ", "+dragged;}
+      $(this).val(contents+dragged);
+    }
+  });
+  
+  $("form").submit(function(){
+    return false;
+  });
+});
+</script>
+<style>
+::selection
+{
+background: #3a3a3a;
+color: #f2f2f2;
+} 
+
+::-webkit-input-placeholder {
+color: #919191;
+letter-spacing: 1px;
+-webkit-transition-property: color;
+-webkit-transition-duration: 200ms;
+-webkit-transition-timing-function: ease-out;
+}
+:hover::-webkit-input-placeholder { color: #BDBDBD; }
+:focus::-webkit-input-placeholder { color: #2E2E2E; }
+.query-state-ha::-webkit-input-placeholder { color: #2E2E2E; }
+
+:-moz-placeholder
+{
+color: #919191;
+letter-spacing: 1px;
+-webkit-transition-property: color;
+-webkit-transition-duration: 200ms;
+-webkit-transition-timing-function: ease-out;
+}
+:hover:-moz-placeholder { color: #BDBDBD; }
+:focus:-moz-placeholder { color: #2E2E2E; }
+.query-state-ha:-moz-placeholder { color: #2E2E2E; }
+
+::-moz-placeholder
+{
+color: #919191;
+letter-spacing: 1px;
+-webkit-transition-property: color;
+-webkit-transition-duration: 200ms;
+-webkit-transition-timing-function: ease-out;
+}
+:hover::-moz-placeholder { color: #BDBDBD; }
+:focus::-moz-placeholder { color: #2E2E2E; }
+.query-state-ha::-moz-placeholder { color: #2E2E2E; }
+
+:-ms-input-placeholder
+{
+color: #919191;
+letter-spacing: 1px;
+-webkit-transition-property: color;
+-webkit-transition-duration: 200ms;
+-webkit-transition-timing-function: ease-out;
+}
+:hover:-ms-input-placeholder { color: #BDBDBD; }
+:focus:-ms-input-placeholder { color: #2E2E2E; }
+.query-state-ha:-ms-input-placeholder { color: #2E2E2E; }
+
+html
+{
+height: 100%;
+margin: 0px;
+padding: 0px;
+font-family: arial;
+font-size: 100%;
+background: #191919;
+}
+
+body
+{
+position: relative;
+margin: 0;
+padding: 60px;
+}
+
+b
+{
+font-weight: bold;
+}
+
+.container
+{
+display: block;
+min-width: 1100px;
+}
+
+#nav:after, 
+.container:after,
+#content:after,
+#content .resultBox:after,
+#content .resultBox .actions:after,
+#content .resultBox .results:after,
+#content .searchBlock:after
+{content: ""; display: block; height: 0; clear: both;}
+
+#nav
+{
+display: block;
+width: 300px;
+float: left;
+}
+
+#content
+{
+display: block;
+
+width: 72%;
+min-width: 800px;
+/*
+width: 800px;*/
+float: left;
+}
+
+
+#nav div, #nav h1
+{
+display: block;
+margin: 0px 5px;
+margin-bottom: 10px;
+margin-right: 10px;
+}
+
+#nav h1, #nav a
+{
+-webkit-box-shadow: 0 8px 6px -6px #000;
+-moz-box-shadow: 0 8px 6px -6px #000;
+box-shadow: 0 8px 6px -6px #000;
+}
+
+h1
+{
+display: block;
+font-weight: bold;
+padding: 50px 0px;
+background: #ff6666;
+font-size: 1.8em;
+color: #fff;
+text-align: center;
+text-transform: uppercase;
+text-shadow: 0px -1px #BD4646;
+}
+
+#nav .commandList
+{
+display: block;
+position: relative;
+}
+
+#nav .commandList a
+{
+display: block;
+opacity: 0;
+position: relative;
+background: #2a2a2a;
+font-size: 1em;
+color: #545454;
+padding: 20px;
+text-decoration: none;
+margin-bottom: 5px;
+text-align: left;
+text-shadow: 0px -1px #121212;
+-webkit-transition-property: color, background, left;
+-webkit-transition-duration: 200ms;
+-webkit-transition-timing-function: ease-out;
+}
+
+#nav .commandList a:hover
+{
+background: #404040;
+color: #191919;
+text-shadow: none;
+}
+
+#nav .commandList a.selected
+{
+background: #CFCFCF;
+background: #636363;
+color: #191919;
+text-shadow: none;
+left: 10px !important;
+}
+
+#content .searchBlock
+{
+display: block;
+width: 100%;
+margin-bottom: 10px;
+-webkit-box-shadow: 0 8px 6px -6px #000;
+-moz-box-shadow: 0 8px 6px -6px #000;
+box-shadow: 0 8px 6px -6px #000;
+
+}
+
+#content .search_input
+{
+display: block !important;
+background: #141414;
+color: #919191;
+border: none;
+font-size: 1em;
+padding: 20px 2.5%;
+margin: 0px;
+width: 85%;
+border-top: 4px solid #141414;
+border-bottom: 4px solid #141414;
+float: left;
+-webkit-transition-property: color, border-bottom;
+-webkit-transition-duration: 200ms;
+-webkit-transition-timing-function: ease-out;
+}
+
+#content input[type=submit]
+{
+cursor: pointer;
+display: block !important;
+background: #2a2a2a;
+color: #545454;
+text-shadow: 0px -1px #121212;
+border: none;
+font-size: 1em;
+width: 10%;
+padding: 20px 2.5%;
+text-transform: uppercase;
+float: left;
+margin: 0px;
+border-top: 4px solid #2a2a2a;
+border-bottom: 4px solid #2a2a2a;
+font-weight: bold;
+/*
+color: #912020;
+background: #331C1C;
+border-color: #331C1C;
+text-shadow: 0px -1px #210A0A;
+*/
+
+background: #141414;
+border-color: #141414;
+-moz-box-sizing: border-box;
+-webkit-box-sizing: border-box;
+-ms-box-sizing: border-box;
+box-sizing: border-box;
+-webkit-transition-property: color, background, border-color, text-shadow;
+-webkit-transition-duration: 200ms;
+-webkit-transition-timing-function: ease-out;
+}
+
+#content input[type=submit]:hover
+{
+/*
+background: #ff6666;
+color: #fff;
+border-color: #ff6666;
+text-shadow: 0px -1px #BD4646;
+*/
+background: #0D0D0D;
+border-color: #0D0D0D;
+color: #ff6666;
+}
+
+#content .search_input:hover
+{
+color: #BDBDBD;
+}
+
+#content .search_input:focus, 
+#content .search_input.query-state-ha
+{
+outline: none;
+background: #0D0D0D;
+color: #fff;
+border-top-color: #0D0D0D;
+border-bottom-color: #ff6666;
+}
+
+#content .search_input.query-state-ha
+{
+border-bottom-color: #D9D9D9;
+}
+
+#content .search_input.query-state-ha.query-state-hover
+{
+border-bottom-color: #ff6666;
+}
+
+#content .resultContainer
+{
+position: relative;
+display: none;
+border-left: 4px solid #636363;
+overflow: hidden;
+margin-bottom: 10px;/*
+-webkit-box-shadow: 0 8px 6px -6px black;
+-moz-box-shadow: 0 8px 6px -6px black;
+box-shadow: 0 8px 6px -6px black;
+*/
+}
+
+#content .resultBox
+{
+position:relative;
+left: -1200px;
+display: block;
+background: #2a2a2a;
+font-size: 1em;
+color: #545454;
+padding: 30px;
+/*margin-bottom: 10px;*/
+-webkit-box-shadow: 0 8px 6px -6px black;
+-moz-box-shadow: 0 8px 6px -6px black;
+box-shadow: 0 8px 6px -6px black;
+/*border-left: 4px solid #ff6666;*/
+/*border-left: 4px solid #636363;*/
+}
+
+#content .resultBox h3
+{
+display: block;
+margin: 0px;
+margin-bottom: 5px;
+padding: 10px;
+padding-left: 0px;
+font-size: 1.2em;
+font-weight: bold;
+letter-spacing: 1px;
+color: #8A8A8A;
+color: #ff6666;
+border-top: 1px solid #363636;
+}
+
+#content .resultBox .actions
+{
+display: block;
+float: left;
+width: 20%;
+}
+
+#content .resultBox .results
+{
+display: block;
+float: right;
+width: 80%;
+border-top: 1px solid #1F1F1F;
+margin-bottom: 10px;
+}
+
+#content .resultBox .actions ul
+{
+display: block;
+list-style-position: outside;
+list-style-type: none;
+border-top: 1px solid #1F1F1F;
+border-bottom: 1px solid #363636;
+margin: 0px;
+padding: 0px;
+margin-right: 20px;
+}
+
+#content .resultBox .actions ul li
+{
+display: block;
+margin: 0px;
+padding: 0px;
+}
+
+#content .resultBox .actions a
+{
+display: block;
+padding: 10px;
+text-decoration: none;
+color: #545454;
+border-bottom: 1px solid #1F1F1F;
+border-top: 1px solid #363636;
+text-align: right;
+-webkit-transition-property: color, background;
+-webkit-transition-duration: 200ms;
+-webkit-transition-timing-function: ease-out;
+}
+
+#content .resultBox .actions a:hover
+{
+color: #808080;
+text-shadow: 0px -1px #000;
+background: #212121;
+border-top-color: #171717;
+}
+
+#content .resultBox .actions a.selected
+{
+color: #D6D6D6;
+}
+
+#content .resultBox.keywords .results a
+{
+display: inline-block;
+margin-bottom: 5px;
+margin-right: 5px;
+float: left;
+padding: 10px;
+background: #424242;
+color: #191919;
+text-decoration: none;
+z-index: 200;
+border-radius: 2px;
+-moz-border-radius: 2px;
+-webkit-border-radius: 2px;
+-webkit-transition-property: color, background;
+-webkit-transition-duration: 100ms;
+-webkit-transition-timing-function: ease-out;
+}
+
+#content .resultBox.keywords .results a:hover
+{
+text-shadow: 0px -1px #000;
+background: #191919;
+color: #808080;
+}
+
+</style>
+</header>
+<body>
+<div class="container">
+  <div id="nav">
+    <h1>dash4<span>twitter</span></h1>   
+    <div class="commandList">
+      <a href="#">Keywords</a>
+      <a href="#">Tweets</a>
+      <a href="#">Location</a> 
+      <a href="#">Trending</a>
+    </div>
+  </div>
+  <div id="content">
+    <div class="searchBlock">
+      <form type="post" action="#" id="searchKeywordForm">
+      	<input type="text" name="searchKeywords" placeholder="Enter Keywords or Hashtags Seperated by Commas" class="search_input">
+      	<input type="submit" value="GO">
+      </form>
+    </div>
+    <div class="resultContainer">
+    <div class="resultBox keywords">
+      <div class="actions">
+        <ul>
+          <li><a href="#all" class="selected">All</a></li>
+          <li><a href="#keywords">Keywords</a></li>
+          <li><a href="#hashtags">Hashtags</a></li>
+          <li><a href="#mentions">Mentions</a></li>
+        </ul>
+      </div>
+      <div class="results">
+        <h3>"austin"</h3>
+    	<a href="#" class="keyword">relevance</a>
+	<a href="#" class="mention">@mass</a>
+	<a href="#" class="hashtag">#rivers</a>
+	<a href="#" class="keyword">love</a>
+	<a href="#" class="keyword">social</a>
+	<a href="#" class="hashtag">#sxsw</a>
+	<a href="#" class="hashtag">#sports</a>
+	<a href="#" class="keyword">tonight</a>
+	<a href="#" class="keyword">media</a>
+	<a href="#" class="keyword">lol</a>
+	<a href="#" class="keyword">guarding</a>
+	<a href="#" class="mention">@kobe</a>
+	<a href="#" class="keyword">tx</a>
+      </div>
+      <div class="results">
+        <h3>"boston"</h3>
+        <a href="#" class="keyword">awesome</a>
+        <a href="#" class="keyword">relevance</a>
+        <a href="#" class="keyword">mass</a>
+        <a href="#" class="keyword">rivers</a>
+        <a href="#" class="keyword">love</a>
+        <a href="#" class="keyword">social</a>
+        <a href="#" class="hashtag">#sxsw</a>
+        <a href="#" class="hashtag">#sports</a>
+        <a href="#" class="keyword">tonight</a>
+        <a href="#" class="keyword">media</a>
+        <a href="#" class="keyword">lol</a>
+        <a href="#" class="keyword">guarding</a>
+        <a href="#" class="mention">@kobe</a>
+        <a href="#" class="keyword">tx</a>
+      </div> 
+    </div>
+    </div>
+  </div>
+</div>
+</body>
+</html>
