@@ -117,6 +117,7 @@ $(document).ready(function(){
     hoverClass: "query-state-hover",
     drop: function( event, ui ) {
       contents = $(this).val().trim()
+      if(contents == $(this).attr("placeholder").trim()) contents = "";
       dragged = ui.draggable.html().trim()
       if(contents != ""){ dragged = ", "+dragged;}
       $(this).val(contents+dragged);
