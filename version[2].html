@@ -93,12 +93,8 @@ function initializePlaceholders(){
   }
 }
 
-$(document).ready(function(){
-  initializePlaceholders();
-  addSelect("#nav .commandList a", showResultBox, hideResultBox);
-  addSelect(".resultBox .actions ul a", keywordAction);
-  $("#content .resultBox").animate({left: 0});
-  $("#nav .filterList a").click(function(){
+function initializeFilters(selection){
+  $(selection).click(function(){
     $(this).slideUp("fast", function(){
       $(this).remove();
       if($("#nav .filterList a.keyword").length < 1) {
@@ -107,12 +103,20 @@ $(document).ready(function(){
     });
     return false;
   });
+}
+
+$(document).ready(function(){
+  initializePlaceholders();
+  addSelect("#nav .commandList a", showResultBox, hideResultBox);
+  addSelect(".resultBox .actions ul a", keywordAction);
+  initializeFilters("#nav .filterList a");
+  $("#content .resultBox").animate({left: 0});
   $("#content .resultBox.keywords .results a").draggable({
     revert: false, // when not dropped, the item will revert back to its initial position
     helper: "clone",
     cursor: "move"
   });
-  $( ".search_input").droppable({
+  $(".search_input").droppable({
     activeClass: "query-state-ha",
     hoverClass: "query-state-hover",
     drop: function( event, ui ) {
@@ -127,6 +131,20 @@ $(document).ready(function(){
   $("#searchKeywordForm").submit(function(){
     $("#nav .commandList a.selected").click();
     showCommands();
+    var sBox = $(".search_input");
+    var contents = sBox.val().trim();
+    if(contents != sBox.attr("placeholder").trim() && contents != "") {
+      var terms = contents.split(",")
+      var newFilters = "\n";
+      for(var i = 0; i < terms.length; i++)
+      {
+        newFilters += "<a href=\"#\" class=\"keyword\">"+terms[i]+"</a>\n"
+      }
+      $("#nav .filterList a.keyword").slideUp("fast", function(){$(this).remove();})
+      $("#nav .filterList .filters").prepend(newFilters);
+      initializeFilters("#nav .filterList a.keyword");
+    }
+    
     return false;
   });
 });
@@ -256,7 +274,7 @@ margin-right: 10px;
 box-shadow: 0 8px 6px -6px #000;
 }
 
-h1
+#nav h1
 {
 display: block;
 font-weight: bold;
@@ -267,6 +285,8 @@ color: #fff;
 text-align: center;
 text-transform: uppercase;
 text-shadow: 0px -1px #BD4646;
+position: relative;
+  z-index: 90;
 }
 
 #nav .commandList, #nav .filterList
@@ -588,9 +608,11 @@ color: #808080;
     </div>
     <div class="filterList">
       <h3>Filters</h3>
-      <a href="#" class="keyword">austin</a>
-      <a href="#" class="keyword">boston</a>
-      <a href="#">Sentiment:POSITIVE</a>
+      <div class="filters">
+        <a href="#" class="keyword">austin</a>
+        <a href="#" class="keyword">boston</a>
+        <a href="#">Sentiment:POSITIVE</a>
+      </div>
     </div>
   </div>
   <div id="content">
