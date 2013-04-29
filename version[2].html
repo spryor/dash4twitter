@@ -1,5 +1,9 @@
 <!DOCTYPE html>
-<html>
+<!--[if lt IE 7 ]> <html class="ie6"> <![endif]-->
+<!--[if IE 7 ]>    <html class="ie7"> <![endif]-->
+<!--[if IE 8 ]>    <html class="ie8"> <![endif]-->
+<!--[if IE 9 ]>    <html class="ie9"> <![endif]-->
+<!--[if (gt IE 9)|!(IE)]><!--> <html> <!--<![endif]-->
 <header>
   <meta charset="utf-8">
   <title>dash4twitter</title>
@@ -70,7 +74,27 @@ function hideResultBox(callback) {
   });
 }
 
+function isIE(){
+  return $('html').is('.ie6, .ie7, .ie8, .ie9')
+}
+
+function initializePlaceholders(){
+  if(isIE()){
+    $("input[type=text]").each(function(){
+      var placeholder = $(this).attr("placeholder")
+      if($(this).val().trim() == "") $(this).val(placeholder);
+      $(this).focus(function(){
+        if($(this).val().trim() == placeholder) $(this).val("");
+      });
+      $(this).blur(function(){
+        if($(this).val().trim() == "") $(this).val(placeholder);
+      });
+    });
+  }
+}
+
 $(document).ready(function(){
+  initializePlaceholders();
   addSelect("#nav .commandList a", showResultBox, hideResultBox);
   addSelect(".resultBox .actions ul a", keywordAction);
   $("#content .resultBox").animate({left: 0});
