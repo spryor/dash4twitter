@@ -41,7 +41,7 @@ function addSelect(loc, action, exitAction) {
       action($(this));
     } else {
       $(this).removeClass("selected");
-      if(exitAction) exitAction(function(){});
+      if(exitAction) exitAction($(this));
     }
     return false;
   });
@@ -59,18 +59,29 @@ function keywordAction(element) {
   }
 }
 
-function showResultBox(element) {
-  $("#content .resultBox").stop(true, true).css({left: -1200});
-  $(".resultContainer").stop(true, true).hide().css({overflow: "hidden",opacity:1}).show("fast", function(){
-    $("#content .resultBox").animate({left: 0}, "normal", function(){
-      $(".resultContainer").css({overflow: "visible"});
-    });
+function hideResultContainer(targetContainer) {
+  targetContainer.stop(true, true).css({overflow: "hidden",opacity:0}).hide(0, function(){
+    targetContainer.find(".resultBox").css({left: -1200});
   });
 }
 
-function hideResultBox(callback) {
-  $(".resultContainer").stop(true, true).css({overflow: "hidden",opacity:0}).hide(0, function(){
-    $("#content .resultBox").css({left: -1200});
+function hideResults(element) {
+  targetContainer = element.attr("href")
+  hideResultContainer($(targetContainer))
+}
+
+function hideAllResults(){
+  hideResultContainer($(".resultContainer:visible"));
+}
+
+function showResultBox(element) {
+  hideAllResults();
+  targetContainer = element.attr("href");
+  $(targetContainer+" .resultBox").stop(true, true).css({left: -1200});
+  $(targetContainer).stop(true, true).hide().css({overflow: "hidden",opacity:1}).show("fast", function(){
+    $(targetContainer+" .resultBox").animate({left: 0}, "normal", function(){
+      $(targetContainer).css({overflow: "visible"});
+    });
   });
 }
 
@@ -107,12 +118,12 @@ function initializeFilters(selection){
 
 $(document).ready(function(){
   initializePlaceholders();
-  addSelect("#nav .commandList a", showResultBox, hideResultBox);
+  addSelect("#nav .commandList a", showResultBox, hideResults);
   addSelect(".resultBox .actions ul a", keywordAction);
   initializeFilters("#nav .filterList a");
   $("#content .resultBox").animate({left: 0});
   $("#content .resultBox.keywords .results a").draggable({
-    revert: false, // when not dropped, the item will revert back to its initial position
+    revert: false,
     helper: "clone",
     cursor: "move"
   });
@@ -601,13 +612,13 @@ color: #808080;
   <div id="nav">
     <h1>dash4<span>twitter</span></h1>   
     <div class="commandList">
-      <a href="#">Keywords</a>
-      <a href="#">Tweets</a>
-      <a href="#">Location</a> 
-      <a href="#">Trends</a>
+      <a href="#keywords">Keywords</a>
+      <a href="#tweets">Tweets</a>
+      <a href="#keywords">Location</a> 
+      <a href="#keywords">Trends</a>
     </div>
     <div class="filterList">
-      <h3>Filters</h3>
+      <h3>Streaming Filters</h3>
       <div class="filters">
         <a href="#" class="keyword">austin</a>
         <a href="#" class="keyword">boston</a>
@@ -622,50 +633,64 @@ color: #808080;
       	<input type="submit" value="GO">
       </form>
     </div>
-    <div class="resultContainer">
-    <div class="resultBox keywords">
-      <div class="actions">
-        <ul>
-          <li><a href="#all" class="selected">All</a></li>
-          <li><a href="#keywords">Keywords</a></li>
-          <li><a href="#hashtags">Hashtags</a></li>
-          <li><a href="#mentions">Mentions</a></li>
-        </ul>
+    <div class="resultContainer" id="keywords">
+      <div class="resultBox keywords">
+        <div class="actions">
+          <ul>
+            <li><a href="#all" class="selected">All</a></li>
+            <li><a href="#keywords">Keywords</a></li>
+            <li><a href="#hashtags">Hashtags</a></li>
+            <li><a href="#mentions">Mentions</a></li>
+          </ul>
+        </div>
+        <div class="results">
+          <h3>"austin"</h3>
+        	<a href="#" class="keyword">relevance</a>
+        	<a href="#" class="mention">@mass</a>
+        	<a href="#" class="hashtag">#rivers</a>
+        	<a href="#" class="keyword">love</a>
+        	<a href="#" class="keyword">social</a>
+        	<a href="#" class="hashtag">#sxsw</a>
+        	<a href="#" class="hashtag">#sports</a>
+        	<a href="#" class="keyword">tonight</a>
+        	<a href="#" class="keyword">media</a>
+        	<a href="#" class="keyword">lol</a>
+        	<a href="#" class="keyword">guarding</a>
+        	<a href="#" class="mention">@kobe</a>
+        	<a href="#" class="keyword">tx</a>
+        </div>
+        <div class="results">
+          <h3>"boston"</h3>
+          <a href="#" class="keyword">awesome</a>
+          <a href="#" class="keyword">relevance</a>
+          <a href="#" class="keyword">mass</a>
+          <a href="#" class="keyword">rivers</a>
+          <a href="#" class="keyword">love</a>
+          <a href="#" class="keyword">social</a>
+          <a href="#" class="hashtag">#sxsw</a>
+          <a href="#" class="hashtag">#sports</a>
+          <a href="#" class="keyword">tonight</a>
+          <a href="#" class="keyword">media</a>
+          <a href="#" class="keyword">lol</a>
+          <a href="#" class="keyword">guarding</a>
+          <a href="#" class="mention">@kobe</a>
+          <a href="#" class="keyword">tx</a>
+        </div> 
       </div>
-      <div class="results">
-        <h3>"austin"</h3>
-    	<a href="#" class="keyword">relevance</a>
-	<a href="#" class="mention">@mass</a>
-	<a href="#" class="hashtag">#rivers</a>
-	<a href="#" class="keyword">love</a>
-	<a href="#" class="keyword">social</a>
-	<a href="#" class="hashtag">#sxsw</a>
-	<a href="#" class="hashtag">#sports</a>
-	<a href="#" class="keyword">tonight</a>
-	<a href="#" class="keyword">media</a>
-	<a href="#" class="keyword">lol</a>
-	<a href="#" class="keyword">guarding</a>
-	<a href="#" class="mention">@kobe</a>
-	<a href="#" class="keyword">tx</a>
-      </div>
-      <div class="results">
-        <h3>"boston"</h3>
-        <a href="#" class="keyword">awesome</a>
-        <a href="#" class="keyword">relevance</a>
-        <a href="#" class="keyword">mass</a>
-        <a href="#" class="keyword">rivers</a>
-        <a href="#" class="keyword">love</a>
-        <a href="#" class="keyword">social</a>
-        <a href="#" class="hashtag">#sxsw</a>
-        <a href="#" class="hashtag">#sports</a>
-        <a href="#" class="keyword">tonight</a>
-        <a href="#" class="keyword">media</a>
-        <a href="#" class="keyword">lol</a>
-        <a href="#" class="keyword">guarding</a>
-        <a href="#" class="mention">@kobe</a>
-        <a href="#" class="keyword">tx</a>
-      </div> 
     </div>
+    <div class="resultContainer" id="tweets">
+      <div class="resultBox">
+        <div class="actions">
+          <ul>
+            <li><a href="#all" class="selected">All</a></li>
+            <li><a href="#keywords">Tweets</a></li>
+            <li><a href="#hashtags">Retweets</a></li>
+            <li><a href="#mentions">Replies</a></li>
+          </ul>
+        </div>
+        <div class="results">
+        </div> 
+      </div>
     </div>
   </div>
 </div>
