@@ -11,7 +11,7 @@ object KeywordExtractor {
       .replaceAll("http[:/[a-zA-Z0-9_.?%]]+", " ") //remove links
     ).toVector
 
-	def clean(sentence: Vector[String]) = sentence
+  def clean(sentence: Vector[String]) = sentence
     .filter(w => w.length > 2 && !English.removeWord(w))
 
   def main(args: Array[String]) {
