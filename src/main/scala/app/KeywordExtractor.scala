@@ -2,6 +2,11 @@ package dash4twitter.app
 
 import dash4twitter.util._
 
+
+/*
+ * The KeywordExtractor currently contains the code for
+ * testing the keyword extraction functionality
+ */
 object KeywordExtractor {
   
   val PMI = new PMI()
@@ -14,10 +19,16 @@ object KeywordExtractor {
   def clean(sentence: Vector[String]) = sentence
     .filter(w => w.length > 2 && !English.removeWord(w))
 
+  /*
+   * The main funciton assume that the args arrays is 
+   * non-empty and contains search terms for which to
+   * return keywords
+   */
   def main(args: Array[String]) {
 
     val filename = "/lang/eng/data/englishTweets_5_3_13.txt.gz"
 
+    //Read the input file and build the data model
     var lineCnt = 0
     print("Counting...")
     Resource.asSource(filename)
@@ -28,6 +39,7 @@ object KeywordExtractor {
     })
     println("Complete! " + lineCnt + " tweets")
 
+    //Read the test search terms and get the results
     args.foreach(term => {
       println("\nSearching for: "+term)
       if(PMI.contains(term)) {

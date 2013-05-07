@@ -1,5 +1,10 @@
 package dash4twitter.util
 
+/*
+ * The Resource object is taken from tshrdlu and is 
+ * used to read files from the resources directory
+ * and read .gz files.
+ */
 object Resource {
 
   import java.util.zip.GZIPInputStream
