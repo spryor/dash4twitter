@@ -47,8 +47,6 @@ object KeywordExtractor {
       println("Complete!")
     }
 
-//    PMI.load(Resource.asStream("/lang/eng/data/PMI.gz"))
-//    PMI.save("/home/cmdjarvis/code/dash4twitter/PMI.gz")
     //Read the test search terms and get the results
     opts.query().foreach(term => {
       println("\nSearching for: "+term)
@@ -58,7 +56,7 @@ object KeywordExtractor {
         else {
           println("\tMentions: "+keywords.filter(_.startsWith("@")).mkString(" "))
           println("\tHashtags: "+keywords.filter(_.startsWith("#")).mkString(" "))
-          println("\tRelated Words: "+keywords.filterNot(x => x.startsWith("@") || x.startsWith("#")).mkString(" "))
+          println("\tRelated Words: "+keywords.filterNot(x => x.startsWith("@") || x.startsWith("#")).take(40).mkString(" "))
         }
       } else {
         println("\tInsufficient Data")
@@ -69,7 +67,8 @@ object KeywordExtractor {
       print("Saving model...")
       val filename = if(opts.save().endsWith(".gz")) opts.save()
                      else opts.save()+".gz"
-      PMI.save(this.getClass().getResource("/lang/eng/data/").getPath()+filename)
+      println(this.getClass().getResource("/lang/eng/data/").getPath()+filename)
+      //PMI.save(this.getClass().getResource("/lang/eng/data/").getPath()+filename)
       println("Complete!")
     } 
    

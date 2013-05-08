@@ -27,15 +27,15 @@ class PMI {
     var i = 0
 
     val output = new DataOutputStream(new GZIPOutputStream(new FileOutputStream(filename)))
-    output.writeInt(totalUnigrams.toInt)
-    output.writeInt(totalJoint.toInt)
+    output.writeDouble(totalUnigrams)
+    output.writeDouble(totalJoint)
     //write unigram data
     output.writeInt(unigrams.size)
     unigrams.foreach{case (unigram, cnt) => {
       lexicon(unigram) = i
       output.writeUTF(unigram)
       output.writeInt(i)
-      output.writeInt(cnt.toInt)
+      output.writeDouble(cnt)
       i += 1
     }}
     //write joint
@@ -44,7 +44,7 @@ class PMI {
       val Array(word1, word2) = pair.split("\\+")
       output.writeInt(lexicon(word1))
       output.writeInt(lexicon(word2))
-      output.writeInt(cnt.toInt)
+      output.writeDouble(cnt)
     }}
     output.close
   }
@@ -52,15 +52,15 @@ class PMI {
   def load(input: DataInputStream) = {
     val lexicon = HashMap[Int, String]()  
  
-    totalUnigrams = input.readInt
-    totalJoint = input.readInt
+    totalUnigrams = input.readDouble
+    totalJoint = input.readDouble
 
     val numUnigrams = input.readInt
   
     (1 to numUnigrams).foreach(_ => {
       val unigram = input.readUTF
       val unigramCode = input.readInt
-      val cnt = input.readInt.toDouble
+      val cnt = input.readDouble
       unigrams(unigram) = cnt
       lexicon(unigramCode) = unigram
     })
@@ -69,7 +69,7 @@ class PMI {
     (1 to numJoint).foreach(_ => {
       val word1 = lexicon(input.readInt)
       val word2 = lexicon(input.readInt)
-      val cnt = input.readInt.toDouble
+      val cnt = input.readDouble
       joint(word1+"+"+word2) = cnt
       if(!invertedIndex.contains(word1)) invertedIndex(word1) = Set()
       if(!invertedIndex.contains(word2)) invertedIndex(word2) = Set()
