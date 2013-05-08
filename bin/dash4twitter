@@ -1,0 +1,6 @@
+#!/bin/bash
+
+CMD="run-main dash4twitter.app.KeywordExtractor $@"
+echo $CMD
+
+./build "$CMD"
