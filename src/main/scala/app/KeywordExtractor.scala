@@ -26,21 +26,31 @@ object KeywordExtractor {
    */
   def main(args: Array[String]) {
 
-    val filename = "/lang/eng/data/englishTweets_5_3_13.txt.gz"
+    val opts = ExtractorOpts(args)
+
+    if(opts.load() != "") {
+      print("Loading model...")
+      PMI.load(Resource.asStream("/lang/eng/data/"+opts.load()))
+      println("Complete!")
+    }
 
     //Read the input file and build the data model
-    var lineCnt = 0
-    print("Counting...")
-    Resource.asSource(filename)
-      .getLines
-      .foreach(line => {
-        lineCnt += 1
-        PMI.update(clean(tokenize(line)).toSet.toVector)
-    })
-    println("Complete! " + lineCnt + " tweets")
+    if(opts.train() != "") {
+      var lineCnt = 0
+      print("Counting...")
+      Resource.asSource("/lang/eng/data/"+opts.train())
+        .getLines
+        .foreach(line => {
+          lineCnt += 1
+          PMI.update(clean(tokenize(line)).toSet.toVector)
+        })
+      println("Complete!")
+    }
 
+//    PMI.load(Resource.asStream("/lang/eng/data/PMI.gz"))
+//    PMI.save("/home/cmdjarvis/code/dash4twitter/PMI.gz")
     //Read the test search terms and get the results
-    args.foreach(term => {
+    opts.query().foreach(term => {
       println("\nSearching for: "+term)
       if(PMI.contains(term)) {
         val (keywords, _) = PMI.getKeywords(term)
@@ -54,5 +64,35 @@ object KeywordExtractor {
         println("\tInsufficient Data")
       }
     })
+
+    if(opts.save() != "") {
+      print("Saving model...")
+      val filename = if(opts.save().endsWith(".gz")) opts.save()
+                     else opts.save()+".gz"
+      PMI.save(this.getClass().getResource("/lang/eng/data/").getPath()+filename)
+      println("Complete!")
+    } 
+   
+  }
+}
+
+object ExtractorOpts {
+
+  import org.rogach.scallop._
+
+  def apply(args: Array[String]) = new ScallopConf(args) {
+    banner("""
+Keyword extraction application.
+
+For usage see below:
+""")
+
+    val load = opt[String]("load", short='l', default=Some(""), descr="The name of the prebuilt model to load")
+    val save = opt[String]("save", short='s', default=Some(""), descr="The name of the model to save")
+    val train = opt[String]("train", short='t', default=Some(""), descr="The path to the train file of tweets")
+    val query = opt[List[String]]("query", short='q', descr="A list of search terms")
+    val version = opt[Boolean]("version", noshort=true, default=Some(false), descr="Show version of this program")
+    val help = opt[Boolean]("help", noshort = true, descr = "Show this message")
+    val verbose = opt[Boolean]("verbose", short='v')
   }
 }

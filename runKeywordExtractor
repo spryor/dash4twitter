@@ -1,1 +1,1 @@
-./build "run-main dash4twitter.app.KeywordExtractor google"
+./build "run-main dash4twitter.app.KeywordExtractor --load PMI.gz --query google"

@@ -7,6 +7,8 @@ package dash4twitter.util
  */
 class PMI {
 
+  import java.io._
+  import java.util.zip._
   import collection.mutable.{HashMap, Set}
   import math.log 
 
@@ -18,6 +20,63 @@ class PMI {
   private[this] val unigrams = HashMap[String,Double]()
   private[this] var totalUnigrams = 0.0
   private[this] var totalJoint = 0.0
+
+  def save(filename: String) {
+
+    val lexicon = HashMap[String, Int]()
+    var i = 0
+
+    val output = new DataOutputStream(new GZIPOutputStream(new FileOutputStream(filename)))
+    output.writeInt(totalUnigrams.toInt)
+    output.writeInt(totalJoint.toInt)
+    //write unigram data
+    output.writeInt(unigrams.size)
+    unigrams.foreach{case (unigram, cnt) => {
+      lexicon(unigram) = i
+      output.writeUTF(unigram)
+      output.writeInt(i)
+      output.writeInt(cnt.toInt)
+      i += 1
+    }}
+    //write joint
+    output.writeInt(joint.size)
+    joint.foreach{case (pair, cnt) => {
+      val Array(word1, word2) = pair.split("\\+")
+      output.writeInt(lexicon(word1))
+      output.writeInt(lexicon(word2))
+      output.writeInt(cnt.toInt)
+    }}
+    output.close
+  }
+
+  def load(input: DataInputStream) = {
+    val lexicon = HashMap[Int, String]()  
+ 
+    totalUnigrams = input.readInt
+    totalJoint = input.readInt
+
+    val numUnigrams = input.readInt
+  
+    (1 to numUnigrams).foreach(_ => {
+      val unigram = input.readUTF
+      val unigramCode = input.readInt
+      val cnt = input.readInt.toDouble
+      unigrams(unigram) = cnt
+      lexicon(unigramCode) = unigram
+    })
+
+    val numJoint = input.readInt
+    (1 to numJoint).foreach(_ => {
+      val word1 = lexicon(input.readInt)
+      val word2 = lexicon(input.readInt)
+      val cnt = input.readInt.toDouble
+      joint(word1+"+"+word2) = cnt
+      if(!invertedIndex.contains(word1)) invertedIndex(word1) = Set()
+      if(!invertedIndex.contains(word2)) invertedIndex(word2) = Set()
+      invertedIndex(word1) += word2
+      invertedIndex(word2) += word1
+    })
+  }
 
   /*
    * The update function takes a vector of tokens and updates
