@@ -30,7 +30,7 @@ object Extractor {
 
   def onStatus(status: String) {
     val tokens = clean(tokenize(status))
-    PMI.update(tokens.distinct)
+    Model.update(tokens.distinct)
     if(filters.length > 0 && filterValidate(tokens)) println(status)
   }
 
@@ -60,7 +60,7 @@ object Extractor {
     opts.query().foreach(term => {
       println("\nSearching for: "+term)
       if(Lexicon.contains(term)) {
-        val (keywords, _) = PMI.getKeywords(term)
+        val (keywords, _) = Model.getKeywords(term)
         if(keywords.length == 0) println("\tInsufficient Data")
         else {
           println("\tMentions: "+keywords.filter(_.startsWith("@")).mkString(" "))

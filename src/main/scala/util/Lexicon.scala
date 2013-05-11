@@ -19,13 +19,15 @@ object Lexicon {
 
   def apply(token: String) = lexicon(token)
 
-  def add(token: String) {
+  def update(token: String) {
     if(lexicon.contains(token)) lexicon(token).incr()
     else lexicon(token) = new TokenStats()
     count += 1
   }
 
-  def count(): Double = count
+  def prob(token: String) = lexicon(token).count/count
+
+  def size() = lexicon.size
 
   def contains(token: String) = lexicon.contains(token)
 
