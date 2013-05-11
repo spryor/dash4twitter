@@ -29,8 +29,8 @@ object Extractor {
     .filter(w => w.length > 2 && !English.removeWord(w))
 
   def onStatus(status: String) {
-    val tokens = clean(tokenize(status)).toSet.toVector
-    PMI.update(tokens)
+    val tokens = clean(tokenize(status))
+    PMI.update(tokens.distinct)
     if(filters.length > 0 && filterValidate(tokens)) println(status)
   }
 
