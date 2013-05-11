@@ -19,8 +19,6 @@ object Lexicon {
 
   def apply(token: String) = lexicon(token)
 
-  def update(tokens: Vector[String]) { tokens.foreach(add) }
-
   def add(token: String) {
     if(lexicon.contains(token)) lexicon(token).incr()
     else lexicon(token) = new TokenStats()
