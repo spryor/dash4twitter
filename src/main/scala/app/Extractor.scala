@@ -13,7 +13,7 @@ object Extractor {
 
   val filters: Vector[Filter] = Vector() //Vector(new KeywordFilter("google"), new KeywordFilter("facebook"))
 
-  def filterValidate(tokens: Vector[String]) = {
+  private[this] def filterValidate(tokens: Vector[String]) = {
     var valid = true
     val it = filters.iterator
     while(valid && it.hasNext) valid = it.next()(tokens)
