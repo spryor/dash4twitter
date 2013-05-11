@@ -13,9 +13,9 @@ object PMI {
   import math.log 
 
   //An index of words to all the words with which each word co-occurred
-  private[this] lazy val invertedIndex = HashMap[Int,Set[Int]]()
+  private[this] lazy val invertedIndex = HashMap[String,Set[String]]()
   //The counts for computing the joint probability
-  private[this] lazy val joint = HashMap[Vector[Int],Double]()
+  private[this] lazy val joint = HashMap[String,Double]()
   //The unigram counts
   private[this] var totalJoint = 0.0
 
@@ -25,15 +25,16 @@ object PMI {
    * 
    * @param tweet is a vector of all the unique unigrams in a tweet
    */
-  def update(tokens: Vector[Int]) {
+  def update(tokens: Vector[String]) {
     var i, j = 0;
     while(i < tokens.length){
       val word = tokens(i)
+      Lexicon.add(word)
       j = i;
       while(j < tokens.length) {
         val co_occurrence = tokens(j)
-        if(word != co_occurrence) {
-          val combined = Vector(word, co_occurrence).sorted
+        if(word != co_occurrence){
+          val combined = Vector(word, co_occurrence).sorted.mkString("+")
           joint(combined) = 
             if(joint.contains(combined)) {
               joint(combined) + 1.0
@@ -52,22 +53,20 @@ object PMI {
     }
   }
 
-  def getKeywords(queryToken: String): (Vector[String], Vector[Double]) = getKeywords(Code(queryToken))
-
   /*
    * The getKeywords function returns the keywords associated with
    * a given unigram.
    *
    * @param queryToken is the unigram about which to find related words
    */
-  def getKeywords(queryToken: Int): (Vector[String], Vector[Double]) = {
+  def getKeywords(queryToken: String) = {
     invertedIndex(queryToken)
       .toVector
       .map(word => {
-        val combined = Vector(queryToken, word).sorted
+        val combined = Vector(queryToken, word).sorted.mkString("+")
         val p_near = if(joint.contains(combined) && joint(combined) > 2.0) joint(combined)
                      else 0.0
-        (Code(word), -1*log((p_near/totalJoint)/(Lexicon(word).count/Lexicon.count)))
+        (word, -1*log((p_near/totalJoint)/(Lexicon(word).count/Lexicon.count)))
       })
       .sortBy(_._2)
       .filter(_._2  < 8)

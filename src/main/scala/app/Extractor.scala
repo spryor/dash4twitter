@@ -11,7 +11,7 @@ object Extractor {
   import java.util.zip.GZIPInputStream
   import java.io._
 
-  val filters = Vector(new KeywordFilter("google"), new KeywordFilter("facebook"))
+  val filters: Vector[Filter] = Vector() //Vector(new KeywordFilter("google"), new KeywordFilter("facebook"))
 
   def filterValidate(tokens: Vector[String]) = {
     var valid = true
@@ -30,8 +30,8 @@ object Extractor {
 
   def onStatus(status: String) {
     val tokens = clean(tokenize(status)).toSet.toVector
-    PMI.update(Lexicon.update_and_encode(tokens))
-    if(filterValidate(tokens)) println(status)
+    PMI.update(tokens)
+    if(filters.length > 0 && filterValidate(tokens)) println(status)
   }
 
   /*
@@ -44,14 +44,16 @@ object Extractor {
     val opts = ExtractorOpts(args)
 
     //Read the input file and build the data model
+    var i = 0
     if(opts.train() != "") {
       print("Counting...")
       io.Source
         .fromInputStream(new GZIPInputStream(new FileInputStream(opts.train())))
         .getLines
-        .take(400000)
-        .foreach(onStatus)
-      println("Complete!")
+        .foreach(status => {
+          onStatus(status)
+           i += 1})
+      println("Complete! " + i + " lines")
     }
 
     //Read the test search terms and get the results
