@@ -35,7 +35,4 @@ object Cooccurrences {
       else 0.0
     numerator/totalOccurrences
   }
- 
-  def size() = occurrences.size()
-
 }
