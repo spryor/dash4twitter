@@ -44,16 +44,13 @@ object Extractor {
     val opts = ExtractorOpts(args)
 
     //Read the input file and build the data model
-    var i = 0
     if(opts.train() != "") {
       print("Counting...")
       io.Source
         .fromInputStream(new GZIPInputStream(new FileInputStream(opts.train())))
         .getLines
-        .foreach(status => {
-          onStatus(status)
-           i += 1})
-      println("Complete! " + i + " lines")
+        .foreach(onStatus)
+      println("Complete!")
     }
 
     //Read the test search terms and get the results
