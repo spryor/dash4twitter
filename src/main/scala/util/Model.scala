@@ -35,7 +35,7 @@ object Model {
    * @param queryToken is the unigram about which to find related words
    */
   def getKeywords(query: String) = {
-    Cooccurrences.candidates(query)
+    Cooccurrences(query)
       .toVector
       .map(PMI(query, _))
       .sortBy(_._2)

@@ -9,6 +9,8 @@ object Cooccurrences {
   private[this] lazy val occurrences = HashMap[String,Double]()
   private[this] var totalOccurrences: Double = 0
 
+  def apply(queryTerm: String) = invertedIndex(queryTerm)
+
   def update(word1: String, word2: String) = {
     if(word1 != word2) {
       val occurrence = Vector(word1, word2).sorted.mkString("+")
@@ -26,8 +28,6 @@ object Cooccurrences {
     }
   }
 
-  def candidates(queryTerm: String) = invertedIndex(queryTerm)
-
   def prob(word1: String, word2: String) = {
     val occurrence = Vector(word1, word2).sorted.mkString("+")
     val numerator = 
@@ -35,4 +35,6 @@ object Cooccurrences {
       else 0.0
     numerator/totalOccurrences
   }
+
+  def size() = occurrences.size
 }

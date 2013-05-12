@@ -8,21 +8,24 @@ import dash4twitter.util._
  */
 object Extractor {
 
+  import collection.mutable.HashMap
   import java.util.zip.GZIPInputStream
   import java.io._
 
-  val filters: Vector[Filter] = Vector() //Vector(new KeywordFilter("google"), new KeywordFilter("facebook"))
+  val filters = HashMap[String, Filter]()
 
-  private[this] def filterValidate(tokens: Vector[String]) = {
+  private[this] def filterValidate(data: Formats) = {
     var valid = true
-    val it = filters.iterator
-    while(valid && it.hasNext) valid = it.next()(tokens)
+    val it = filters.keys.toVector.iterator
+    while(valid && it.hasNext) valid = filters(it.next())(data)
     valid
   }
 
-  def tokenize(sentence: String) = ("([#@]?[a-zA-Z0-9_-]+)".r findAllIn sentence
+  private val tokenRegex = """([#@]?[a-zA-Z'0-9_-]+)""".r
+
+  def tokenize(sentence: String) = (tokenRegex findAllIn sentence
       .toLowerCase
-      .replaceAll("http[:/[a-zA-Z0-9_.?%]]+", " ") //remove links
+      .replaceAll("http[:/[a-zA-Z0-9_.?%]]+| [0-9] ", " ")//remove links and numbers
     ).toVector
 
   def clean(sentence: Vector[String]) = sentence
@@ -31,7 +34,7 @@ object Extractor {
   def onStatus(status: String) {
     val tokens = clean(tokenize(status))
     Model.update(tokens.distinct)
-    if(filters.length > 0 && filterValidate(tokens)) println(status)
+    if(filters.size > 0 && filterValidate(Formats(status, tokens, tokens.toSet))) println(status)
   }
 
   /*
@@ -42,6 +45,16 @@ object Extractor {
   def main(args: Array[String]) {
 
     val opts = ExtractorOpts(args)
+
+    //register filters
+    if(opts.filter().length > 0) {
+      opts.filter().foreach(keyword => {
+        val filterName = "keywordFilter=" + keyword
+        if(!filters.contains(filterName)) {
+          filters(filterName) = new KeywordFilter(keyword)
+        }
+      })
+    }
 
     //Read the input file and build the data model
     if(opts.train() != "") {
@@ -62,7 +75,7 @@ object Extractor {
         else {
           println("\tMentions: "+keywords.filter(_.startsWith("@")).mkString(" "))
           println("\tHashtags: "+keywords.filter(_.startsWith("#")).mkString(" "))
-          println("\tRelated Words: "+keywords.filterNot(x => x.startsWith("@") || x.startsWith("#")).take(40).mkString(" "))
+          println("\tRelated Words: "+keywords.filterNot(x => x.startsWith("@") || x.startsWith("#")).take(60).mkString(" "))
         }
       } else {
         println("\tNot available")
@@ -86,6 +99,7 @@ For usage see below:
     val load = opt[String]("load", short='l', default=Some(""), descr="The name of the prebuilt model to load")
     val save = opt[String]("save", short='s', default=Some(""), descr="The name of the model to save")
     val train = opt[String]("train", short='t', default=Some(""), descr="The path to the train file of tweets")
+    val filter = opt[List[String]]("filters", short='f', default=Some(List()), descr="Keywords to filter tweets")
     val query = opt[List[String]]("query", short='q', descr="A list of search terms")
     val version = opt[Boolean]("version", noshort=true, default=Some(false), descr="Show version of this program")
     val help = opt[Boolean]("help", noshort = true, descr = "Show this message")
