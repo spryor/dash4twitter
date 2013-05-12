@@ -16,5 +16,5 @@ To use the command line interface, the following environment variables will need
     export DASH4TWITTER_DIR=~/your/path/to/dash4twitter
     export PATH=$PATH:$DASH4TWITTER_DIR/bin
           
-## Launching the Dashboard
+## Launching the Dashboard with Play
 Coming soon...
