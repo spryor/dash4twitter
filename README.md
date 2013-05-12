@@ -13,8 +13,8 @@ dash4twitter is a simple dashboard application for twitter analysis. Current fun
 ## Configuring your environment variables
 To use the command line interface, the following environment variables will need to be set in your `.bashrc`. Note that setting up these environment variables are not needed for 
 
-          export DASH4TWITTER_DIR=~/your/path/to/dash4twitter
-          export PATH=$PATH:$DASH4TWITTER_DIR/bin
+    export DASH4TWITTER_DIR=~/your/path/to/dash4twitter
+    export PATH=$PATH:$DASH4TWITTER_DIR/bin
           
 ## Launching the Dashboard
 Coming soon...
