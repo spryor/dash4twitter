@@ -1,23 +1,26 @@
 package dash4twitter.app
 
-case class Formats (text: String, tokens: Vector[String], elements: Set[String])
+import dash4twitter.util.Tokenizer
+
+case class FeatureExtractor (text: String, tokenizer: Tokenizer) {
+  lazy val tokens = tokenizer(text)
+  lazy val distinct = tokens.distinct
+  lazy val elements = tokens.toSet
+}
 
 trait Filter {
-  def apply(data: Formats): Boolean
+  def apply(data: FeatureExtractor): Boolean
 }
 
 class KeywordFilter(keyword: String) extends Filter {
-  def apply(data: Formats): Boolean = data.elements(keyword)
+  def apply(data: FeatureExtractor): Boolean = data.elements(keyword)
 }
 
-class PolarityFilter(polarity: Int) extends Filter {
+abstract class PolarityFilter(result: String, detector: PolarityDetector) extends Filter {
+  def apply(data: FeatureExtractor): Boolean = detector(data) == result
+}
 
-  private[this] def detector(text: String) = 1
-
-  override def apply(data: Formats): Boolean = detector(data.text) == polarity
-} 
-
-object PosFilter extends PolarityFilter(1)
-object NegFilter extends PolarityFilter(-1)
-object NeutralFilter extends PolarityFilter(0)
+object PosFilter extends PolarityFilter(LibLinearPolarity.pos, LibLinearPolarity)
+object NegFilter extends PolarityFilter(LibLinearPolarity.neg, LibLinearPolarity)
+object NeutralFilter extends PolarityFilter(LibLinearPolarity.neutral, LibLinearPolarity)
 

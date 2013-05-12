@@ -14,27 +14,20 @@ object Extractor {
 
   val filters = HashMap[String, Filter]()
 
-  private[this] def filterValidate(data: Formats) = {
+  private[this] def filterValidate(data: FeatureExtractor) = {
     var valid = true
     val it = filters.keys.toVector.iterator
     while(valid && it.hasNext) valid = filters(it.next())(data)
     valid
   }
 
-  private val tokenRegex = """([#@]?[a-zA-Z'0-9_-]+)""".r
-
-  def tokenize(sentence: String) = (tokenRegex findAllIn sentence
-      .toLowerCase
-      .replaceAll("http[:/[a-zA-Z0-9_.?%]]+| [0-9] ", " ")//remove links and numbers
-    ).toVector
-
   def clean(sentence: Vector[String]) = sentence
     .filter(w => w.length > 2 && !English.removeWord(w))
 
   def onStatus(status: String) {
-    val tokens = clean(tokenize(status))
-    Model.update(tokens.distinct)
-    if(filters.size > 0 && filterValidate(Formats(status, tokens, tokens.toSet))) println(status)
+    val features = FeatureExtractor(status, Twokenizer)
+    Model.update(clean(features.distinct))
+    if(filters.size > 0 && filterValidate(features)) println(status)
   }
 
   /*
@@ -45,6 +38,8 @@ object Extractor {
   def main(args: Array[String]) {
 
     val opts = ExtractorOpts(args)
+
+    filters("polarity=POS") = PosFilter
 
     //register filters
     if(opts.filter().length > 0) {
