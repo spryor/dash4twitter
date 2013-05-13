@@ -1,9 +1,15 @@
 package dash4twitter.util
 
+class TimeWindow(start: Int) {
+  private[this] var occurrences = 1
+}
+
 class TokenStats {
 
+  import scala.collection.mutable.Queue
+
   private[this] var count: Double = 1
-  //TODO add temporal data for sentiment test
+  private[this] val past = Queue[TimeWindow]()
   
   def incr() { count += 1 }
   def count(): Double = count

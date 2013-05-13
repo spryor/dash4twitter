@@ -1,1 +1,1 @@
-./build "run-main dash4twitter.app.Extractor --train /home/harmonix/dash4twitter/src/main/resources/lang/eng/data/englishTweets_5_3_13.txt.gz --query google"
+./build "run-main dash4twitter.app.Extractor --train /home/cmdjarvis/code/dash4twitter/src/main/resources/lang/eng/data/englishTweets_5_3_13.txt.gz --query austin --filters austin"

@@ -14,7 +14,6 @@ function showCommands() {
   }
 }
 
-
 /*
  * A function to hide the primary commands
  */
@@ -46,7 +45,6 @@ function addSelect(loc, action, exitAction) {
     return false;
   });
 }
-
 
 /*
  * A function to control the functionality of selecting or 

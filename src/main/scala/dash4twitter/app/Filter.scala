@@ -16,11 +16,23 @@ class KeywordFilter(keyword: String) extends Filter {
   def apply(data: FeatureExtractor): Boolean = data.elements(keyword)
 }
 
-abstract class PolarityFilter(result: String, detector: PolarityDetector) extends Filter {
-  def apply(data: FeatureExtractor): Boolean = detector(data) == result
+object KeywordFilter {
+  def apply(keyword: String) = new KeywordFilter(keyword)
 }
 
-object PosFilter extends PolarityFilter(LibLinearPolarity.pos, LibLinearPolarity)
-object NegFilter extends PolarityFilter(LibLinearPolarity.neg, LibLinearPolarity)
-object NeutralFilter extends PolarityFilter(LibLinearPolarity.neutral, LibLinearPolarity)
+class PolarityFilter(result: String, detector: PolarityDetector) extends Filter {
+  def apply(data: FeatureExtractor): Boolean = detector(data.text) == result
+}
+
+object PolarityFilter {
+
+  lazy val detector: PolarityDetector = ClassifierPolarityDetector
+  
+  def apply(result: String) = {
+    val polarity = if(result == "POS") detector.POS
+                   else if(result == "NEG") detector.NEG
+                   else detector.NEUTRAL
+    new PolarityFilter(polarity, detector)
+  }
+}
 

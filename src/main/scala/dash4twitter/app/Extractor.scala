@@ -38,15 +38,16 @@ object Extractor {
   def main(args: Array[String]) {
 
     val opts = ExtractorOpts(args)
-
-    filters("polarity=POS") = PosFilter
+   
+    val polarity = "POS"
+    filters("polarity="+polarity) = PolarityFilter(polarity)
 
     //register filters
     if(opts.filter().length > 0) {
       opts.filter().foreach(keyword => {
         val filterName = "keywordFilter=" + keyword
         if(!filters.contains(filterName)) {
-          filters(filterName) = new KeywordFilter(keyword)
+          filters(filterName) = KeywordFilter(keyword)
         }
       })
     }

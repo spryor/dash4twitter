@@ -11,6 +11,7 @@ crossPaths := false
 retrieveManaged := true
 
 libraryDependencies ++= Seq(
-  "org.scalanlp" % "nak" % "1.1.1"      
+  "org.rogach" %% "scallop" % "0.8.1",
+  "org.scalanlp" % "chalk" % "1.1.2"
 )
 
