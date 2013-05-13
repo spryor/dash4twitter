@@ -19,13 +19,10 @@ trait PolarityDetector {
 
 object LexicalPolarityDetector extends PolarityDetector {
 
-  /**
-   * A function to use the lexicon method for SA.
-   * 
-   * @param evalFile - The path to the evaluation xml file
-   */
-  def apply(text: String): String  = {
-    val counts = Twokenizer(text).foldLeft(0)((prevAssgn, token) => prevAssgn + English.LexicalPolarity(token))
+  def apply(text: String): String = getPolarity(Twokenizer(text))
+
+  def getPolarity(tokens: Vector[String]) = {
+    val counts = tokens.foldLeft(0)((prevAssgn, token) => prevAssgn + English.LexicalPolarity(token))
 
     if(counts > 0) POS
     else if(counts < 0) NEG
@@ -35,7 +32,6 @@ object LexicalPolarityDetector extends PolarityDetector {
 }
 
 object ClassifierPolarityDetector extends PolarityDetector {
-
 
   PolarityClassifier.train_and_save("/home/cmdjarvis/code/gpp/data/debate08/train.xml","/home/cmdjarvis/code/model.gz")
   val classifier = PolarityClassifier.load("/home/cmdjarvis/code/model.gz") 
@@ -52,7 +48,8 @@ object PolarityClassifier {
   //combined with lexicon based polarity features.
   val Featurizer = new Featurizer[String, String] {
     def apply(text: String) = {
-      val words = Twokenizer(text)
+      val tokens = Twokenizer(text)
+      val words = tokens
         .mkString(" ")
         .replaceAll("(.)\\1{2,}", "$1")
         .replaceAll(" [0-9]+ ", " ")
@@ -63,7 +60,7 @@ object PolarityClassifier {
         .map(tok => FeatureObservation("word="+Stemmer(tok)))
 
       val polarityFeature =
-        Array(FeatureObservation("lexicalPolarity="+LexicalPolarityDetector(text)))
+        Array(FeatureObservation("lexicalPolarity="+LexicalPolarityDetector.getPolarity(tokens)))
 
       wordFeatures ++
       polarityFeature
