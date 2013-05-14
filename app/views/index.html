@@ -1,0 +1,79 @@
+<!DOCTYPE html>
+<!--[if lt IE 7 ]> <html class="ie6"> <![endif]-->
+<!--[if IE 7 ]>    <html class="ie7"> <![endif]-->
+<!--[if IE 8 ]>    <html class="ie8"> <![endif]-->
+<!--[if IE 9 ]>    <html class="ie9"> <![endif]-->
+<!--[if (gt IE 9)|!(IE)]><!--> <html> <!--<![endif]-->
+<header>
+  <meta charset="utf-8">
+  <title>dash4twitter - 0.2.0</title>
+  <link rel="stylesheet" type="text/css" href="css/styling.css">
+  <script src="http://ajax.googleapis.com/ajax/libs/jquery/1.9.1/jquery.min.js"></script>
+  <script src="http://code.jquery.com/ui/1.10.2/jquery-ui.js"></script>
+  <script src="scripts/js.js"></script>
+</header>
+<body>
+<div class="container">
+  <div id="nav">
+    <h1>dash4<span>twitter</span></h1>   
+    <div class="commandList">
+      <a href="#keywordContainer">Keywords</a>
+      <a href="#tweetContainer">Tweets</a>
+      <!--<a href="#keywordContainer">Trends</a>-->
+    </div>
+    <div class="filterList">
+      <h3>Streaming Filters</h3>
+      <div class="filters">
+      </div>
+    </div>
+  </div>
+  <div id="content">
+    <div class="searchBlock">
+      <form type="post" action="#" id="searchKeywordForm">
+        <input type="text" name="searchKeywords" placeholder="Enter Keywords or Hashtags Seperated by Commas" class="search_input">
+        <input type="submit" value="GO">
+      </form>
+    </div>
+
+    <div class="resultContainer" id="keywordContainer">
+      <div class="resultBox keywords">
+        <div class="actions">
+          <ul>
+            <li><a href="#all" class="selected">All</a></li>
+            <li><a href="#keyword">Keywords</a></li>
+            <li><a href="#hashtag">Hashtags</a></li>
+            <li><a href="#mention">Mentions</a></li>
+          </ul>
+        </div>
+      </div>
+    </div>
+
+   <div class="resultContainer" id="tweetContainer">
+      <div class="resultBox tweets">
+        <div class="actions">
+          <ul>
+            <li><a href="#all" class="selected">All</a></li>
+            <li><a href="#positive">Positive</a></li>
+            <li><a href="#negative">Negative</a></li>
+            <li><a href="#neutral">Neutral</a></li>
+          </ul>
+        </div>
+        <div class="results"></div>
+      </div>
+    </div>
+
+  </div>
+</div>
+<div class="fadeBox">
+</div>
+<div class="fadeMessageBox">
+  <div class="container">
+    <img src="loader.gif" class="loader">
+    <span class="status">Loading...</span>
+    <span class="details">Initializing, please wait.</span>
+    <div>Welcome to dash4twitter</div>
+  </div>
+</div>
+<img src="socketLoader.gif" id="socketLoader">
+</body>
+</html>

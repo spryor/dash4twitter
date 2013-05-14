@@ -1,5 +1,0 @@
-#!/bin/bash
-
-CMD="run-main dash4twitter.app.Extractor $@"
-
-$DASH4TWITTER_DIR/./build "$CMD"

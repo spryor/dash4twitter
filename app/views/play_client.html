@@ -1,0 +1,51 @@
+<!DOCTYPE html>
+<header>
+  <meta charset="utf-8" /> 
+  <title>WebSocket Test</title>
+  <script src="http://ajax.googleapis.com/ajax/libs/jquery/1.9.1/jquery.min.js"></script>
+  <script language="javascript" type="text/javascript">  
+  var wsUri = "ws://localhost:9000"; 
+  function addMessage(text) {
+    set = $("#output p")
+    if(set.length >= 4) set.first().slideUp("fast", function(){$(this).remove();})
+    $("<p>"+text+"</p>").hide().appendTo("#output").slideDown("fast"); 
+  }
+  function init() { openWebSocket(); } 
+  function openWebSocket() { websocket = new WebSocket(wsUri);
+  websocket.onopen = function(evt) { onOpen(evt) };
+  websocket.onclose = function(evt) { onClose(evt) };
+  websocket.onmessage = function(evt) { onMessage(evt) };
+  websocket.onerror = function(evt) { onError() }; } 
+  function onOpen(evt) { addMessage("CONNECTED"); streamTweetFromBuffer(); }
+  function onClose(evt) { websocket.close(); addMessage("DISCONNECTED"); } 
+  var i = 0
+  function onMessage(evt) {
+    var json = jQuery.parseJSON( evt.data )
+    if(json.msg != "empty") addMessage(json.msg); 
+  }  
+  function onError(evt) { addMessage('<span style="color: red;">ERROR:</span> ' + evt.data); } 
+  //function doSend(message) { websocket.send(message); }
+  function doSend(act, msg) {
+   websocket.send(JSON.stringify({action: act, message: msg }));
+  }
+  function streamTweetFromBuffer(){doSend("stream");}
+  function grabKeywords(keywords){doSend("getkeywords", keywords);}
+  setInterval(streamTweetFromBuffer,2000);
+  //setInterval(function(){grabKeywords("high");},10000);
+  window.addEventListener("load", init, false); 
+  </script>
+  <style>
+  p {
+  display: block;
+  margin: 10px;
+  padding: 20px;
+  background: #DEDEDE;
+  width: 700px;
+  }
+  </style>
+</header>
+<body>
+<h2>WebSocket Test</h2>
+<div id="output"></div>
+</body>
+</html>
