@@ -182,7 +182,8 @@ padding-right: 60px;
 #content .searchBlock:after,
 #nav .filterList:after,
 .fadeMessageBox:after,
-.fadeMessageBox .container:after
+.fadeMessageBox .container:after,
+.results a:after
 {content: ""; display: block; height: 0; clear: both;}
 
 #nav
@@ -540,6 +541,11 @@ color: #808080;
 #tweetContainer .resultBox .results
 {
 border-top: none;
+overflow: hidden;
+background: #fff;
+border-radius: 4px;
+-moz-border-radius: 4px;
+-webkit-border-radius: 4px;
 }
 
 #tweetContainer .resultBox .results a
@@ -547,16 +553,50 @@ border-top: none;
 display: block;
 text-align: left;
 border: none;
-padding: 15px;
-margin-bottom: 5px;
-background: #424242;
+padding: 10px;
 color: #191919;
 text-decoration: none;
 z-index: 200;
-border-radius: 2px;
--moz-border-radius: 2px;
--webkit-border-radius: 2px;
+font-size: 0.9em;
+border-bottom: 1px solid #e8e8e8;
+line-height: 1.4em;
 -webkit-transition-property: color, background;
 -webkit-transition-duration: 100ms;
 -webkit-transition-timing-function: ease-out;
+}
+
+#tweetContainer .resultBox .results a:hover
+{
+background: #F5F5F5;
+text-shadow: none;
+color: #191919;
+}
+
+
+#tweetContainer .resultBox .results a .profileImage
+{
+display: block;
+float: left;
+margin-right: 8px;
+/*margin-bottom: 8px;*/
+border-radius: 5px;
+-moz-border-radius: 5px;
+-webkit-border-radius: 5px;
+}
+
+#tweetContainer .resultBox .results a .names
+{
+display: block;
+}
+
+#tweetContainer .resultBox .results a .names .screenName
+{
+font-weight: bold;
+color: #333;
+}
+
+#tweetContainer .resultBox .results a .names .username
+{
+font-size: 0.92em;
+color: #999;
 }

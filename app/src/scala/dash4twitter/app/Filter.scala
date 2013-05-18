@@ -12,12 +12,17 @@ trait StreamFilter {
   def apply(data: FeatureExtractor): Boolean
 }
 
-class KeywordFilter(keyword: String) extends StreamFilter {
-  def apply(data: FeatureExtractor): Boolean = data.elements(keyword)
+class KeywordFilter(keywords: Vector[String]) extends StreamFilter {
+  def apply(data: FeatureExtractor): Boolean = {
+    var valid = true
+    val it = keywords.iterator
+    while(valid && it.hasNext) valid = data.elements(it.next())
+    valid
+  }
 }
 
 object KeywordFilter {
-  def apply(keyword: String) = new KeywordFilter(keyword)
+  def apply(keywords: String) = new KeywordFilter(keywords.split("\\+").toVector.map(_.trim))
 }
 
 class PolarityFilter(result: String, detector: PolarityDetector) extends StreamFilter {

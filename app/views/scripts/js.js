@@ -9,6 +9,16 @@ function removeFadeBox() {
   });
 }
 
+function showFadeBox(stat, details) {
+  fadebox = "<div class=\"fadeBox\"></div>"
+  fadebox += "<div class=\"fadeMessageBox\">"
+  fadebox += "<div class=\"container\">"
+  fadebox += "<span class=\"status\">"+stat+"</span>"
+  fadebox += "<span class=\"details\">"+details+"</span>"
+  fadebox += "</div></div>"
+  $(fadebox).hide().appendTo("body").fadeIn("fast");
+}
+
 function removeInitialFadeBox() {
   $(".fadeMessageBox .status").html("Complete!");
   setTimeout(removeFadeBox, 800);
@@ -49,7 +59,7 @@ function openWebSocket() {
 
 function onOpen(evt) { initStatus("Web socket open."); removeInitialFadeBox(); streamTweetFromBuffer(); }
 
-function onClose(evt) { websocket.close(); addMessage("DISCONNECTED"); } 
+function onClose(evt) { websocket.close(); showFadeBox("Oops, the connection was lost.", "Try refreshing the page to restart the connection."); } 
 
 function onMessage(evt) {
   var json = jQuery.parseJSON( evt.data )
@@ -80,13 +90,13 @@ function removeFilter(filterName){showSocketLoader(); doSend("removeFilter", fil
 
 function addTweet(data) {
   set = $("#tweetContainer .resultBox .results a")
-  if(set.length >= 8) set.last().hide("fast", function(){$(this).remove();})
+  if(set.length >= 8) set.last().slideUp("fast", function(){$(this).remove();})
   var label;
   if(data.label == "pos") label = "positive"
   else if(data.label == "neg") label = "negative"
   else label = "neutral"
-  var newTweet = $("<a href=\"https://twitter.com/"+data.userurl+"\" class=\""+label+"\">"+data.tweet+"</a>")
-  newTweet.hide().prependTo("#tweetContainer .resultBox .results").show("fast");
+  var newTweet = $("<a href=\"https://twitter.com/"+data.screenName+"\" class=\""+label+"\" target=\"_blank\"><img src=\""+data.userImage+"\" class=\"profileImage\"><div class=\"names\"><span class=\"screenName\">"+data.username+"</span> <span class=\"username\">@"+data.screenName+"</span></div>"+data.tweet+"</a>")
+  newTweet.hide().prependTo("#tweetContainer .resultBox .results").slideDown("fast");
   action = $("#tweetContainer .resultBox .actions ul a.selected").attr("href");
   target = action.substring(1, action.length);
   if(action != "#all" && !newTweet.hasClass(target)) newTweet.animate({opacity:.3}, "fast")

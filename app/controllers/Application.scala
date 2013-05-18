@@ -32,9 +32,9 @@ object Application extends Controller with BasicStreamer{
   val keywordFilter = "keyword"
 
   private[this] def filterValidate(data: FeatureExtractor) = {
-    var valid = true
+    var valid = false
     val it = filters.keys.toVector.iterator
-    while(valid && it.hasNext) valid = filters(it.next())(data)
+    while(!valid && it.hasNext) valid = filters(it.next())(data)
     valid
   }
 
@@ -66,7 +66,9 @@ object Application extends Controller with BasicStreamer{
       val (status, label) = candidateBuffer.dequeue
       Json.stringify(Json.obj("type" -> "tweet", "data" -> Json.obj("tweet" -> status.getText, 
                                                                     "id" -> status.getId,
-                                                                    "userurl" -> status.getUser().getScreenName,
+                                                                    "userImage" -> status.getUser().getProfileImageURL,
+                                                                    "screenName" -> status.getUser().getScreenName,
+                                                                    "username" -> status.getUser().getName,
                                                                     "label" -> label)))
     } else doNothing()
   }
