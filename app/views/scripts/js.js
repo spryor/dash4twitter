@@ -97,7 +97,7 @@ function addTweet(data) {
   if(data.label == "pos") label = "positive"
   else if(data.label == "neg") label = "negative"
   else label = "neutral"
-  var newTweet = $("<a href=\"https://twitter.com/"+data.screenName+"\" class=\""+label+"\" target=\"_blank\"><img src=\""+data.userImage+"\" class=\"profileImage\"><div class=\"names\"><span class=\"screenName\">"+data.username+"</span> <span class=\"username\">@"+data.screenName+"</span></div>"+data.tweet+"</a>")
+  var newTweet = $("<a href=\"https://twitter.com/"+data.screenName+"/status/"+data.id+"\" class=\""+label+"\" target=\"_blank\"><img src=\""+data.userImage+"\" class=\"profileImage\"><div class=\"names\"><span class=\"screenName\">"+data.username+"</span> <span class=\"username\">@"+data.screenName+"</span></div>"+data.tweet+"</a>")
   newTweet.hide().prependTo("#tweetContainer .resultBox .results").slideDown("fast");
   action = $("#tweetContainer .resultBox .actions ul a.selected").attr("href");
   target = action.substring(1, action.length);

@@ -63,9 +63,11 @@ object Application extends Controller with BasicStreamer{
 
   def streamTweet() = {
     if (!candidateBuffer.isEmpty) {
-      val (status, label) = candidateBuffer.dequeue
+      val (initStatus, label) = candidateBuffer.dequeue
+      val status = if(initStatus.isRetweet()) initStatus.getRetweetedStatus
+                   else initStatus
       Json.stringify(Json.obj("type" -> "tweet", "data" -> Json.obj("tweet" -> status.getText, 
-                                                                    "id" -> status.getId,
+                                                                    "id" -> status.getId.toString,
                                                                     "userImage" -> status.getUser().getProfileImageURL,
                                                                     "screenName" -> status.getUser().getScreenName,
                                                                     "username" -> status.getUser().getName,
