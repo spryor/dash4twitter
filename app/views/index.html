@@ -10,7 +10,7 @@
   <link rel="stylesheet" type="text/css" href="css/styling.css">
   <script src="http://ajax.googleapis.com/ajax/libs/jquery/1.9.1/jquery.min.js"></script>
   <script src="http://code.jquery.com/ui/1.10.2/jquery-ui.js"></script>
-  <script src="scripts/js.js"></script>
+  <script type="text/javascript" src="scripts/js.js"></script>
 </header>
 <body>
 <div class="container">
@@ -58,7 +58,12 @@
             <li><a href="#neutral">Neutral</a></li>
           </ul>
         </div>
-        <div class="results"></div>
+        <div class="results">
+          <div class="tweetStreamerLoader">
+            ...waiting for data...
+            <img src="socketLoader.gif">
+          </div>
+        </div>
       </div>
     </div>
 

@@ -89,8 +89,10 @@ function removeFilter(filterName){showSocketLoader(); doSend("removeFilter", fil
 //window.addEventListener("load", initWebSocket, false);
 
 function addTweet(data) {
+  tweetLoader = $("#tweetContainer .resultBox .results .tweetStreamerLoader");
+  if(tweetLoader.length > 0) tweetLoader.remove();
   set = $("#tweetContainer .resultBox .results a")
-  if(set.length >= 8) set.last().slideUp("fast", function(){$(this).remove();})
+  if(set.length >= 30) set.last().slideUp("fast", function(){$(this).remove();})
   var label;
   if(data.label == "pos") label = "positive"
   else if(data.label == "neg") label = "negative"

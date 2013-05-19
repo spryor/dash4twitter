@@ -24,12 +24,12 @@ object Application extends Controller with BasicStreamer{
   import collection.mutable.HashMap
 
   val twitterStream = new TwitterStreamFactory().getInstance
-  val tweetBufferSize = 20
+  private[this] val tweetBufferSize = 20
   twitterStream.addListener(this)
   twitterStream.sample()
-  val candidateBuffer = Queue[(twitter4j.Status, String)]()   
-  val filters = HashMap[String, StreamFilter]()
-  val keywordFilter = "keyword"
+  private[this] val candidateBuffer = Queue[(twitter4j.Status, String)]()   
+  private[this] val filters = HashMap[String, StreamFilter]()
+  private[this] val keywordFilter = "keyword"
 
   private[this] def filterValidate(data: FeatureExtractor) = {
     var valid = false
@@ -81,7 +81,7 @@ object Application extends Controller with BasicStreamer{
      )
      val mappings = command
        .split(",").map(k => {
-         val keyword = k.trim
+         val keyword = k.trim.toLowerCase
          addFilter(keywordFilter, keyword)
          println("Getting keywords for: "+keyword)
          val keywords = if(Lexicon.contains(keyword)) Model.getKeywords(keyword)._1
