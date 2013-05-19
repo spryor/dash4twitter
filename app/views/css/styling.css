@@ -662,5 +662,5 @@ background: #3a3a3a;
 }
 
 #tweetContainer .resultBox .results::-webkit-scrollbar-thumb:window-inactive {
-background: rgba(255,0,0,0.4); 
+background: #3a3a3a; 
 }
