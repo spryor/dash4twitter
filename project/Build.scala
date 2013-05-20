@@ -15,6 +15,9 @@ object ApplicationBuild extends Build {
     "org.rogach" %% "scallop" % "0.8.1",
     "org.scalanlp" % "chalk" % "1.1.2",
     "com.cybozu.labs" % "langdetect" % "1.1-20120112",
+    //"org.apache.lucene" % "lucene-core" % "4.2.0",
+    //"org.apache.lucene" % "lucene-analyzers-common" % "4.2.0",
+    //"org.apache.lucene" % "lucene-queryparser" % "4.2.0"
     anorm
   )
 

@@ -14,14 +14,13 @@ class TokenStats {
   
   def incr() { 
     count += 1
-    /*
-    if(past.isEmpty | ((System.currentTimeMillis / 1000) - past.last.created) > 60) {
-      past.enqueue(new TimeWindow)
-      if(past.size > 20) past.dequeue
-    } else {
-      past.last.occurrences += 1 
-    }
-    */
+    //val currentTime = (System.currentTimeMillis / 1000)    
+    //if(past.isEmpty | (currentTime - past.last.created) > 60) {
+    //  past.enqueue(new TimeWindow)
+    //  if(past.size > 20) past.dequeue
+    //} else {
+    //  past.last.occurrences += 1 
+    //}
   }
   def count(): Double = count
 

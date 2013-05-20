@@ -22,7 +22,7 @@ object LexicalPolarityDetector extends PolarityDetector {
   def apply(text: String): String = getPolarity(Twokenizer(text))
 
   def getPolarity(tokens: Vector[String]) = {
-    val counts = tokens.foldLeft(0)((prevAssgn, token) => prevAssgn + English.LexicalPolarity(token))
+    val counts = tokens.distinct.foldLeft(0)((prevAssgn, token) => prevAssgn + English.LexicalPolarity(token))
 
     if(counts > 0) POS
     else if(counts < 0) NEG
@@ -55,8 +55,8 @@ object PolarityClassifier {
         .split("\\s+")
 
       val wordFeatures = words
-        .filterNot(English.removeWord)
-        .map(tok => FeatureObservation("word="+Stemmer(tok)))
+        .filterNot(English.Stopwords)
+        .map(tok => FeatureObservation("token="+Stemmer(tok)))
 
       val polarityFeature =
         Array(FeatureObservation("lexicalPolarity="+LexicalPolarityDetector.getPolarity(tokens)))

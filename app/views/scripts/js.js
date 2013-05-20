@@ -10,13 +10,16 @@ function removeFadeBox() {
 }
 
 function showFadeBox(stat, details) {
-  fadebox = "<div class=\"fadeBox\"></div>"
-  fadebox += "<div class=\"fadeMessageBox\">"
-  fadebox += "<div class=\"container\">"
-  fadebox += "<span class=\"status\">"+stat+"</span>"
-  fadebox += "<span class=\"details\">"+details+"</span>"
-  fadebox += "</div></div>"
-  $(fadebox).hide().appendTo("body").fadeIn("fast");
+  contents = "<span class=\"status\">"+stat+"</span>"
+  contents += "<span class=\"details\">"+details+"</span>"
+  if($(".fadeMessageBox").length < 1) {
+    fadebox = "<div class=\"fadeBox\"></div>"
+    fadebox += "<div class=\"fadeMessageBox\">"
+    fadebox += "<div class=\"container\">"+contents+"</div>"
+    $(fadebox).hide().appendTo("body").fadeIn("fast");
+  } else {
+    $(".fadeMessageBox .container").html(contents);
+  }
 }
 
 function removeInitialFadeBox() {

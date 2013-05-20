@@ -10,9 +10,9 @@ object English {
   private[this] lazy val lexiconDir = englishDir + "lexicon/"
   private[this] lazy val getWordLabel = """.*word1=([a-z]+).*priorpolarity=([a-z]+).*""".r
 
-  private[this] lazy val Stopwords = Resource.asSource(lexiconDir + "stopwords.english.gz").getLines.toSet ++ Set("don", "rt")
-  private[this] lazy val Acronyms = Resource.asSource(lexiconDir + "acronyms.txt.gz").getLines.map(_.trim.toLowerCase).toSet
-  private[this] lazy val VulgarWords = Resource.asSource(lexiconDir + "vulgar.txt.gz").getLines.toSet
+  lazy val Stopwords = Resource.asSource(lexiconDir + "stopwords.english.gz").getLines.toSet ++ Set("don", "rt")
+  lazy val Acronyms = Resource.asSource(lexiconDir + "acronyms.txt.gz").getLines.map(_.trim.toLowerCase).toSet
+  lazy val VulgarWords = Resource.asSource(lexiconDir + "vulgar.txt.gz").getLines.toSet
   lazy val LexicalPolarity = getPolarityLexicon()
 
   /*

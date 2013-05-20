@@ -31,6 +31,10 @@ object Application extends Controller with BasicStreamer{
   private[this] val filters = HashMap[String, StreamFilter]()
   private[this] val keywordFilter = "keyword"
 
+  private[this] def emptyCandidateBuffer() {
+    while(!candidateBuffer.isEmpty) candidateBuffer.dequeue
+  }
+
   private[this] def filterValidate(data: FeatureExtractor) = {
     var valid = false
     val it = filters.keys.toVector.iterator
@@ -51,6 +55,7 @@ object Application extends Controller with BasicStreamer{
   private[this] def deleteFilter(filterName: String) = {
     if(filters.contains(filterName)) {
       filters.remove(filterName)
+      emptyCandidateBuffer()
       println("Removed filter: "+filterName)
     }
     doNothing()
@@ -76,7 +81,7 @@ object Application extends Controller with BasicStreamer{
   }
 
   def getKeywords(command: String) = {
-     while(!candidateBuffer.isEmpty) candidateBuffer.dequeue
+     emptyCandidateBuffer()
      val currentFilters = filters.keys
      currentFilters.foreach(filterName => 
        if(filterName.startsWith(keywordFilter)) deleteFilter(filterName)
