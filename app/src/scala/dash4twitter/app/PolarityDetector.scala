@@ -14,6 +14,8 @@ trait PolarityDetector {
   lazy val NEG = "neg"
   lazy val NEUTRAL = "neutral"
 
+  lazy val toIndex = Map(POS -> 0, NEG -> 1, NEUTRAL -> 2)
+
   def apply(tokens: String): String
 }
 

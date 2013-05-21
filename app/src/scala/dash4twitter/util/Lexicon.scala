@@ -1,5 +1,7 @@
 package dash4twitter.util
 
+import dash4twitter.app.LexicalPolarityDetector
+
 class TimeWindow {
   var occurrences = 1
   var created: Long = System.currentTimeMillis / 1000
@@ -11,19 +13,11 @@ class TokenStats {
 
   private[this] var count: Double = 1
   private[this] val past = Queue[TimeWindow]()
-  
-  def incr() { 
-    count += 1
-    //val currentTime = (System.currentTimeMillis / 1000)    
-    //if(past.isEmpty | (currentTime - past.last.created) > 60) {
-    //  past.enqueue(new TimeWindow)
-    //  if(past.size > 20) past.dequeue
-    //} else {
-    //  past.last.occurrences += 1 
-    //}
-  }
+  private[this] val polarityDistribution = Array(0, 0, 0)
+  def incr() { count += 1 }
   def count(): Double = count
-
+  def updatePolarity(polarity: String) { polarityDistribution(LexicalPolarityDetector.toIndex(polarity)) += 1 }
+  def getPolarityDistribution() = polarityDistribution.toVector
 }
 
 object Lexicon {
@@ -35,9 +29,10 @@ object Lexicon {
 
   def apply(token: String) = lexicon(token)
 
-  def update(token: String) {
+  def update(token: String, polarity: String) {
     if(lexicon.contains(token)) lexicon(token).incr()
     else lexicon(token) = new TokenStats()
+    lexicon(token).updatePolarity(polarity)
     count += 1
   }
 

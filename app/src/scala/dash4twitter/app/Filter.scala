@@ -2,7 +2,7 @@ package dash4twitter.app
 
 import dash4twitter.util.Tokenizer
 
-case class FeatureExtractor (text: String, tokenizer: Tokenizer) {
+case class FeatureExtractor (text: String, polarity: String, tokenizer: Tokenizer) {
   val tokens = tokenizer(text)
   val distinct = tokens.distinct
   val elements = tokens.toSet

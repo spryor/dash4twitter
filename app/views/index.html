@@ -10,6 +10,7 @@
   <link rel="stylesheet" type="text/css" href="css/styling.css">
   <script src="http://ajax.googleapis.com/ajax/libs/jquery/1.9.1/jquery.min.js"></script>
   <script src="http://code.jquery.com/ui/1.10.2/jquery-ui.js"></script>
+  <script src="http://d3js.org/d3.v3.min.js"></script>
   <script type="text/javascript" src="scripts/js.js"></script>
 </header>
 <body>
@@ -19,7 +20,7 @@
     <div class="commandList">
       <a href="#keywordContainer">Keywords</a>
       <a href="#tweetContainer">Tweets</a>
-      <!--<a href="#keywordContainer">Trends</a>-->
+      <a href="#sentContainer">Sentiment</a>
     </div>
     <div class="filterList">
       <h3>Streaming Filters</h3>
@@ -64,6 +65,11 @@
             <img src="socketLoader.gif">
           </div>
         </div>
+      </div>
+    </div>
+
+    <div class="resultContainer" id="sentContainer">
+      <div class="resultBox">
       </div>
     </div>
 

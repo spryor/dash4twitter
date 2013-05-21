@@ -478,6 +478,11 @@ padding: 0px;
 margin-right: 20px;
 }
 
+#content .resultBox .actions ul.push
+{
+margin-bottom: 20px;
+}
+
 #content .resultBox .actions ul li
 {
 display: block;
@@ -557,7 +562,7 @@ overflow-y: auto;
 overflow-x: hidden;
 background: #fff;
 background: #141414;
-min-height: 250px;
+min-height: 350px;
 height: auto !important;
 margin-bottom: 0px;
 max-height: 700px;
@@ -658,4 +663,18 @@ background: #3a3a3a;
 
 #tweetContainer .resultBox .results::-webkit-scrollbar-thumb:window-inactive {
 background: #3a3a3a; 
+}
+
+#content #sentContainer .resultBox .results
+{
+width: 50%;
+float: left;
+}
+
+#content #sentContainer .resultBox .results span
+{
+display: block;
+text-align: center;
+color: #fff !important;
+font-size: 0.8em;
 }

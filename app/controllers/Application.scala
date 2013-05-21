@@ -61,9 +61,6 @@ object Application extends Controller with BasicStreamer{
     doNothing()
   }
 
-  private[this] def clean(sentence: Vector[String]) = sentence
-    .filter(w => w.length > 2 && !English.removeWord(w) && !(w matches "[0-9]+"))
-
   def doNothing() = Json.stringify(Json.obj("type" -> "empty"))
 
   def streamTweet() = {
@@ -86,17 +83,29 @@ object Application extends Controller with BasicStreamer{
      currentFilters.foreach(filterName => 
        if(filterName.startsWith(keywordFilter)) deleteFilter(filterName)
      )
-     val mappings = command
-       .split(",").map(k => {
-         val keyword = k.trim.toLowerCase
+     val terms = command.split(",").map(_.trim.toLowerCase)
+     val mappings = terms.map(keyword => {
          addFilter(keywordFilter, keyword)
          println("Getting keywords for: "+keyword)
          val keywords = if(Lexicon.contains(keyword)) Model.getKeywords(keyword)._1
                         else Vector()
          (keyword, keywords.take(50).toSeq)
        }).toMap
-     Json.stringify(Json.obj("type" -> "keywords", "data" -> Json.toJson(mappings), "filters" -> Json.toJson(filters.keys.toSeq)) )
-  }
+
+     val termSentiment = terms.map(keyword => {
+       val distribution = if(Lexicon.contains(keyword)) Lexicon(keyword).getPolarityDistribution()
+                          else Vector()
+       (keyword, distribution)
+     }).toMap
+
+     Json.stringify(Json.obj(
+       "type" -> "keywords", 
+       "data" -> Json.toJson(mappings), 
+       "sentiment" -> Json.toJson(termSentiment),
+       "filters" -> Json.toJson(filters.keys.toSeq)
+       )
+     )
+  }  
 
   def index = WebSocket.adapter {implicit req =>
     var testMsg = ""
@@ -117,18 +126,20 @@ object Application extends Controller with BasicStreamer{
     if(LanguageDetector(tweet) == "en") {
       println(tweet)
       //extract the features for the model
-      val features = FeatureExtractor(tweet, Twokenizer)
+      //val polarity = ClassifierPolarityDetector(features.text)//LexicalPolarityDetector.getPolarity(features.tokens)
+      val features = FeatureExtractor(tweet, ClassifierPolarityDetector(tweet), Twokenizer)
       //update the model
-      Model.update(clean(features.distinct))
+      Model.update(features)
       //if a tweet filters correctly, add it to the model
+      //val label = ClassifierPolarityDetector(features.text)//LexicalPolarityDetector.getPolarity(features.tokens)
       if(filters.size > 0 && filterValidate(features)) {
         println("FILTERED: "+tweet)
-        val label = ClassifierPolarityDetector(features.text)//LexicalPolarityDetector.getPolarity(features.tokens)
+        //val label = ClassifierPolarityDetector(features.text)//LexicalPolarityDetector.getPolarity(features.tokens)
         if (candidateBuffer.size >= tweetBufferSize) {   
-          candidateBuffer.enqueue((status, label))
+          candidateBuffer.enqueue((status, features.polarity))
           candidateBuffer.dequeue
         } else {
-          candidateBuffer.enqueue((status, label))
+          candidateBuffer.enqueue((status, features.polarity))
         }
       }
     }

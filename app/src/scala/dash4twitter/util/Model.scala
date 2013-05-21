@@ -1,5 +1,7 @@
 package dash4twitter.util
 
+import dash4twitter.app.FeatureExtractor
+
 /*
  * The Model class tracks the co-occurrence of strings. This class 
  * is used to collect data and extract keywords from the data
@@ -9,16 +11,20 @@ object Model {
 
   import math.log
 
+  private[this] def clean(sentence: Vector[String]) = sentence
+    .filter(w => w.length > 2 && !English.removeWord(w) && !(w matches "[0-9]+"))
+
   /*
    * The update function takes a vector of tokens and updates
    * the counts
    * 
    * @param tweet is a vector of all the unique unigrams in a tweet
    */
-  def update(tokens: Vector[String]) {
+  def update(features: FeatureExtractor) {
+    var tokens = clean(features.distinct)
     var i, j = 0;
     while(i < tokens.length) {
-      Lexicon.update(tokens(i))
+      Lexicon.update(tokens(i), features.polarity)
       j = i+1;
       while(j < tokens.length) {
         Cooccurrences.update(tokens(i), tokens(j))
