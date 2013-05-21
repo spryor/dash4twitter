@@ -675,6 +675,10 @@ float: left;
 {
 display: block;
 text-align: center;
-color: #fff !important;
 font-size: 0.8em;
+}
+
+#content #sentContainer .resultBox .results span svg .arc
+{
+color: #fff !important;
 }
