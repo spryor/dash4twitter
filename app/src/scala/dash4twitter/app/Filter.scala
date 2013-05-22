@@ -22,7 +22,7 @@ class KeywordFilter(keywords: Vector[String]) extends StreamFilter {
 }
 
 object KeywordFilter {
-  def apply(keywords: String) = new KeywordFilter(keywords.split("\\+").toVector.map(_.trim))
+  def apply(keywords: String) = new KeywordFilter(keywords.split("\\s+|\\+").toVector.map(_.trim))
 }
 
 class PolarityFilter(result: String, detector: PolarityDetector) extends StreamFilter {
