@@ -669,6 +669,13 @@ background: #3a3a3a;
 {
 width: 50%;
 float: left;
+border: none;
+height: 360px;
+}
+
+#content #sentContainer .resultBox h3
+{
+border: none;
 }
 
 #content #sentContainer .resultBox .results span
@@ -677,8 +684,20 @@ display: block;
 text-align: center;
 font-size: 0.8em;
 }
-
+/*
 #content #sentContainer .resultBox .results span svg .arc
 {
-color: #fff !important;
+stroke: #2a2a2a;
+stroke-width: 4;
 }
+*/
+#content #sentContainer .resultBox .results span svg .arc text
+{
+stroke: none;
+}
+
+#content #sentContainer .resultBox .results span svg .slice {
+  stroke: #fff;
+  stroke-width: 3px;
+}
+

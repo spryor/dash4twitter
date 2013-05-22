@@ -213,21 +213,22 @@ function addNewTermSentiment(data) {
     $("<div class=\"results\" id=\""+id+"\"><h3>\""+keyword+"\"</h3><span>"+content+"</span></div>").appendTo("#sentContainer .resultBox");
     if(content == "") {
       var dataset = [
-        {label: "Positive", value: data[keyword][0]}, 
+        {label: "Neutral", value: data[keyword][2]}, 
         {label: "Negative", value: data[keyword][1]}, 
-        {label: "Neutral", value: data[keyword][2]}
+        {label: "Positive", value: data[keyword][0]}
       ];
 
       var width = 300,
       height = 300,
       radius = Math.min(width, height) / 2;
 
-      var color = d3.scale.ordinal()
-        .range(["#98abc5", "#8a89a6", "#7b6888", "#6b486b", "#a05d56", "#d0743c", "#ff8c00"]);
+      var color = d3.scale.category10();
+        //d3.scale.ordinal()
+        //.range(["#98abc5", "#8a89a6", "#7b6888", "#6b486b", "#a05d56", "#d0743c", "#ff8c00"]);
 
       var arc = d3.svg.arc()
         .outerRadius(radius - 10)
-        .innerRadius(radius - 70);
+        .innerRadius(radius * .5);
 
       var pie = d3.layout.pie()
         .sort(null)
@@ -256,7 +257,10 @@ function addNewTermSentiment(data) {
         .attr("transform", function(d) { return "translate(" + arc.centroid(d) + ")"; })
         .attr("dy", ".30em")
         .style("text-anchor", "middle")
-        .text(function(d) { return d.data.label; });
+        .text(function(d) { 
+          if(d.data.value > 0) return d.data.label;
+          return ""; 
+        });
     }
   }
 }
