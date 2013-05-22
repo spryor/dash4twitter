@@ -203,81 +203,61 @@ function addNewKeywords(data) {
 
 function addNewTermSentiment(data) {
   $("#sentContainer .resultBox .results").remove();
+  var i = 0;
+  
   for(keyword in data) {
-    var id = keyword+"Sentiment";
+    i++;
+    var id = "sentimentChart"+i;
     var content = ""
     if(data[keyword].length < 1) content = "Insufficient Data"
     $("<div class=\"results\" id=\""+id+"\"><h3>\""+keyword+"\"</h3><span>"+content+"</span></div>").appendTo("#sentContainer .resultBox");
-    if(content != "") return
+    if(content == "") {
+      var dataset = [
+        {label: "Positive", value: data[keyword][0]}, 
+        {label: "Negative", value: data[keyword][1]}, 
+        {label: "Neutral", value: data[keyword][2]}
+      ];
 
-    var dataset = [
-      {label: "Positive", value: data[keyword][0]}, 
-      {label: "Negative", value: data[keyword][1]}, 
-      {label: "Neutral", value: data[keyword][2]}
-    ];
+      var width = 300,
+      height = 300,
+      radius = Math.min(width, height) / 2;
 
-    var width = 300,
-    height = 300,
-    radius = Math.min(width, height) / 2;
+      var color = d3.scale.ordinal()
+        .range(["#98abc5", "#8a89a6", "#7b6888", "#6b486b", "#a05d56", "#d0743c", "#ff8c00"]);
 
-    var color = d3.scale.ordinal()
-      .range(["#98abc5", "#8a89a6", "#7b6888", "#6b486b", "#a05d56", "#d0743c", "#ff8c00"]);
+      var arc = d3.svg.arc()
+        .outerRadius(radius - 10)
+        .innerRadius(radius - 70);
 
-    var arc = d3.svg.arc()
-      .outerRadius(radius - 10)
-      .innerRadius(radius - 70);
+      var pie = d3.layout.pie()
+        .sort(null)
+        .value(function(d) { return d.value; });
 
-    var pie = d3.layout.pie()
-      .sort(null)
-      .value(function(d) { return d.value; });
+      var svg = d3.select("#"+id+" span").append("svg")
+        .attr("width", width)
+        .attr("height", height)
+        .append("g")
+        .attr("transform", "translate(" + width / 2 + "," + height / 2 + ")");
 
-    var svg = d3.select("#"+id+" span").append("svg")
-      .attr("width", width)
-      .attr("height", height)
-      .append("g")
-      .attr("transform", "translate(" + width / 2 + "," + height / 2 + ")");
+      dataset.forEach(function(d) {
+        d.value = +d.value;
+      });
 
-    dataset.forEach(function(d) {
-      d.value = +d.value;
-    });
+      var g = svg.selectAll(".arc")
+        .data(pie(dataset))
+        .enter().append("g")
+        .attr("class", "arc");
 
-    var g = svg.selectAll(".arc")
-      .data(pie(dataset))
-      .enter().append("g")
-      .attr("class", "arc");
+      g.append("path")
+        .attr("d", arc)
+        .style("fill", function(d) { return color(d.data.label); });
 
-    g.append("path")
-      .attr("d", arc)
-      .style("fill", function(d) { return color(d.data.label); });
-
-    g.append("text")
-      .attr("transform", function(d) { return "translate(" + arc.centroid(d) + ")"; })
-      .attr("dy", ".30em")
-      .style("text-anchor", "middle")
-      .text(function(d) { return d.data.label; });
-
-/*
-    var color = d3.scale.category20();
-
-    var pie = d3.layout.pie()
-      .sort(null);
-
-    var arc = d3.svg.arc()
-      .innerRadius(radius - 100)
-      .outerRadius(radius - 20);
-
-    var svg = d3.select("#"+id+" span").append("svg")
-      .attr("width", width)
-      .attr("height", height)
-      .append("g")
-      .attr("transform", "translate(" + width / 2 + "," + height / 2 + ")");
-    var path = svg.selectAll("path")
-      .data(pie([dataSet]))
-      .enter().append("path")
-      .attr("fill", function(d, i) { return color(i); })
-      .attr("d", arc)
-      .each(function(d) { this._current = d; }); // store the initial value
-*/
+      g.append("text")
+        .attr("transform", function(d) { return "translate(" + arc.centroid(d) + ")"; })
+        .attr("dy", ".30em")
+        .style("text-anchor", "middle")
+        .text(function(d) { return d.data.label; });
+    }
   }
 }
 
