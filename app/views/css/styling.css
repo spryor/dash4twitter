@@ -693,11 +693,26 @@ stroke-width: 4;
 */
 #content #sentContainer .resultBox .results span svg .arc text
 {
-stroke: none;
+fill: #fff;
 }
 
-#content #sentContainer .resultBox .results span svg .slice {
-  stroke: #fff;
-  stroke-width: 3px;
+.tooltip 
+{
+display: none;
+position: absolute;
+border: 6px solid #141414;
+border-radius: 20px;
+-moz-border-radius: 20px;
+-webkit-border-radius: 20px;
+padding: 12px;
+font-size: .8em;
+display: block;
+font-weight: bold;
+background: #141414;
+color: #fff;
+text-align: center;
+-webkit-box-shadow: 0 8px 6px -6px #000;
+-moz-box-shadow: 0 8px 6px -6px #000;
+box-shadow: 0 8px 6px -6px #000;
 }
 

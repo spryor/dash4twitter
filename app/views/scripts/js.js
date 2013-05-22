@@ -261,6 +261,22 @@ function addNewTermSentiment(data) {
           if(d.data.value > 0) return d.data.label;
           return ""; 
         });
+
+      g.on("mouseover", function(d, i){
+        var tooltip = $('<p class="tooltip"></p>')
+          .text(d.data.value)
+          .appendTo('body')
+          .show()
+          .css({opacity: 0, background: color(d.data.label)})
+          .animate({opacity: 1}, "fast");
+        $(this).mousemove(function(e) {
+            var mousex = e.pageX + 20; //Get X coordinates
+            var mousey = e.pageY + 10; //Get Y coordinates
+            tooltip.css({ top: mousey, left: mousex })
+          });
+      }).on("mouseout", function(d, i){
+        $('.tooltip').remove();
+      });
     }
   }
 }
