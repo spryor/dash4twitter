@@ -83,9 +83,10 @@ object Application extends Controller with BasicStreamer{
      currentFilters.foreach(filterName => 
        if(filterName.startsWith(keywordFilter)) deleteFilter(filterName)
      )
-     val terms = command.split(",").map(_.trim.toLowerCase)
-     val mappings = terms.map(keyword => {
-         addFilter(keywordFilter, keyword)
+     val flts = command.split(",").map(_.trim.toLowerCase)
+     flts.foreach(filterOption => addFilter(keywordFilter, filterOption))
+     val terms = flts.flatMap{option => option.split("\\s+|\\+").map(_.trim)}
+     val mappings = terms.distinct.map(keyword => {
          println("Getting keywords for: "+keyword)
          val keywords = if(Lexicon.contains(keyword)) Model.getKeywords(keyword)._1
                         else Vector()
