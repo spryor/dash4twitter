@@ -83,20 +83,38 @@ object Application extends Controller with BasicStreamer{
      currentFilters.foreach(filterName => 
        if(filterName.startsWith(keywordFilter)) deleteFilter(filterName)
      )
-     val flts = command.split(",").map(_.trim.toLowerCase)
-     flts.foreach(filterOption => addFilter(keywordFilter, filterOption))
-     val terms = flts.flatMap{option => option.split("\\s+|\\+").map(_.trim)}
+     val terms = command.split(",").map(_.trim.toLowerCase).distinct
+     terms.foreach(filterOption => addFilter(keywordFilter, filterOption))
      val mappings = terms.distinct.map(keyword => {
-         println("Getting keywords for: "+keyword)
+       println("Getting keywords for: "+keyword)
+       val queryTerms = keyword.split("\\s+|\\+").map(_.trim)
+       if(queryTerms.length < 2) {
          val keywords = if(Lexicon.contains(keyword)) Model.getKeywords(keyword)._1
                         else Vector()
-         (keyword, keywords.take(50).toSeq)
-       }).toMap
+         (keyword, keywords.take(50))
+       } else {
+         val results = queryTerms.map(term => {
+           val result = if(Lexicon.contains(term)) Model.getKeywords(term)._1
+                        else Vector()
+           result
+         }).sortBy(_.length)
+         val intersection = results.take(1)(0).toSet
+         (keyword, results
+           .drop(1)
+           .flatten
+           .filter(intersection)
+           .toVector
+           .take(50))
+       }
+     }).toMap
 
-     val termSentiment = terms.map(keyword => {
-       val distribution = if(Lexicon.contains(keyword)) Lexicon(keyword).getPolarityDistribution()
-                          else Vector()
-       (keyword, distribution)
+     val termSentiment = terms
+       .flatMap{option => option.split("\\s+|\\+").map(_.trim)}
+       .distinct
+       .map(keyword => {
+         val distribution = if(Lexicon.contains(keyword)) Lexicon(keyword).getPolarityDistribution()
+                            else Vector()
+         (keyword, distribution)
      }).toMap
 
      Json.stringify(Json.obj(

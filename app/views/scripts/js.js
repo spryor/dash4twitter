@@ -228,7 +228,7 @@ function addNewTermSentiment(data) {
 
       var arc = d3.svg.arc()
         .outerRadius(radius - 10)
-        .innerRadius(radius * .5);
+        .innerRadius(radius * .4);
 
       var pie = d3.layout.pie()
         .sort(null)
