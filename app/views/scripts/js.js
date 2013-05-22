@@ -222,9 +222,9 @@ function addNewTermSentiment(data) {
       height = 300,
       radius = Math.min(width, height) / 2;
 
-      var color = d3.scale.category10();
-        //d3.scale.ordinal()
-        //.range(["#98abc5", "#8a89a6", "#7b6888", "#6b486b", "#a05d56", "#d0743c", "#ff8c00"]);
+      var color = //d3.scale.category10();
+        d3.scale.ordinal()
+        .range(["#1f77b4", "#d62728", "#2ca02c"]);
 
       var arc = d3.svg.arc()
         .outerRadius(radius - 10)
