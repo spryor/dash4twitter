@@ -43,6 +43,7 @@ function hideSocketLoader() {
 Handle Web Socket
 */
 var tweetStreamer;
+var dataRefresher;
 var wsUri = "ws://localhost:9000"; 
 function addMessage(text) {
   set = $("#output p")
@@ -62,14 +63,22 @@ function openWebSocket() {
 
 function onOpen(evt) { initStatus("Web socket open."); removeInitialFadeBox(); streamTweetFromBuffer(); }
 
-function onClose(evt) { websocket.close(); showFadeBox("Oops, the connection was lost.", "Try refreshing the page to restart the connection."); } 
+function onClose(evt) { 
+  websocket.close(); 
+  window.clearInterval(tweetStreamer);
+  window.clearInterval(dataRefresher);
+  showFadeBox("Oops, the connection was lost.", "Try refreshing the page to restart the connection."); 
+} 
 
 function onMessage(evt) {
   var json = jQuery.parseJSON( evt.data )
-  if(json.type == "keywords") {
+  if(json.type == "keywordUpdate") {
     addNewKeywords(json.data);
     addNewTermSentiment(json.sentiment);
     addNewFilters(json.filters);
+  } else if(json.type == "keywordRefresh") {
+    addNewKeywords(json.data);
+    addNewTermSentiment(json.sentiment);
   } else if(json.type == "tweet") {
     addTweet(json.data);
   }
@@ -86,7 +95,9 @@ function streamTweetFromBuffer(){doSend("stream", "");}
 
 function grabKeywords(keywords){showSocketLoader(); doSend("getkeywords", keywords);}
 
-function removeFilter(filterName){showSocketLoader(); doSend("removeFilter", filterName);}
+function refreshData(){doSend("refreshData", "");}
+
+function removeFilter(filterName){showSocketLoader(); doSend("removeFilter", filterName); dataRefresher(); }
 
 function addTweet(data) {
   tweetLoader = $("#tweetContainer .resultBox .results .tweetStreamerLoader");
@@ -112,7 +123,6 @@ function addNewFilters(filters) {
     if(filters[i][0]=='k') classAssignment = "class=\"keyword\"";
     newFilters += "<a href=\"#"+filters[i]+"\" "+classAssignment+">"+filters[i]+"</a>\n"
   }
-
   $("#nav .filterList .filters").prepend(newFilters);
   //prep the new filter links for clicking
 
@@ -203,6 +213,7 @@ function addNewKeywords(data) {
 
 function addNewTermSentiment(data) {
   $("#sentContainer .resultBox .results").remove();
+  $(".tooltip").remove();
   var i = 0;
   
   for(keyword in data) {
@@ -373,7 +384,9 @@ function initializeKeywordSearch() {
       sBox.val("");
       grabKeywords(contents);
       window.clearInterval(tweetStreamer);
-      tweetStreamer = setInterval(streamTweetFromBuffer,10000);
+      tweetStreamer = setInterval(streamTweetFromBuffer,2000);
+      window.clearInterval(dataRefresher);
+      dataRefresher = setInterval(refreshData,5000);
       showCommands();
     }
     return false;

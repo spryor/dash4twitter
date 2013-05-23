@@ -42,17 +42,21 @@ object Application extends Controller with BasicStreamer{
     valid
   }
 
-  private[this] def addFilter(dataType: String, value: String) {
+  private[this] def addFilter(dataType: String, value: String) = {
+    var added = false
     if(dataType==keywordFilter) {
       val filterName = keywordFilter+"="+value
       if(!filters.contains(filterName)) {
         filters(filterName) = KeywordFilter(value)
         println("Added filter: "+filterName)
+        added = true
       }
     }
+    added
   }
 
   private[this] def deleteFilter(filterName: String) = {
+    emptyCandidateBuffer()
     if(filters.contains(filterName)) {
       filters.remove(filterName)
       emptyCandidateBuffer()
@@ -77,15 +81,14 @@ object Application extends Controller with BasicStreamer{
     } else doNothing()
   }
 
-  def getKeywords(command: String) = {
-     emptyCandidateBuffer()
-     val currentFilters = filters.keys
-     currentFilters.foreach(filterName => 
-       if(filterName.startsWith(keywordFilter)) deleteFilter(filterName)
-     )
-     val terms = command.split(",").map(_.trim.toLowerCase).distinct
-     terms.foreach(filterOption => addFilter(keywordFilter, filterOption))
-     val mappings = terms.distinct.map(keyword => {
+  private[this] def refreshData(update: Boolean = true) = {
+    val activeFilters = filters
+       .keys
+       .toVector
+       .filter(_.startsWith("keyword="))
+       .map(_.drop(8))
+     //terms.distinct
+     val mappings = activeFilters.map(keyword => {
        println("Getting keywords for: "+keyword)
        val queryTerms = keyword.split("\\s+|\\+").map(_.trim)
        if(queryTerms.length < 2) {
@@ -108,7 +111,7 @@ object Application extends Controller with BasicStreamer{
        }
      }).toMap
 
-     val termSentiment = terms
+     val termSentiment = activeFilters
        .flatMap{option => option.split("\\s+|\\+").map(_.trim)}
        .distinct
        .map(keyword => {
@@ -116,14 +119,21 @@ object Application extends Controller with BasicStreamer{
                             else Vector()
          (keyword, distribution)
      }).toMap
-
+   
+     val rType = if(update) "keywordUpdate" else "keywordRefresh"
      Json.stringify(Json.obj(
-       "type" -> "keywords", 
-       "data" -> Json.toJson(mappings), 
+       "type" -> rType,
+       "data" -> Json.toJson(mappings),
        "sentiment" -> Json.toJson(termSentiment),
        "filters" -> Json.toJson(filters.keys.toSeq)
        )
      )
+  }
+
+  def getKeywords(command: String) = {
+     val terms = command.split(",").map(_.trim.toLowerCase).distinct
+     terms.foreach(filterOption => addFilter(keywordFilter, filterOption))
+     refreshData()
   }  
 
   def index = WebSocket.adapter {implicit req =>
@@ -135,6 +145,7 @@ object Application extends Controller with BasicStreamer{
       if (action=="stream") streamTweet()
       else if (action=="removeFilter") deleteFilter(command)
       else if (action=="getkeywords") getKeywords(command)
+      else if (action=="refreshData") refreshData(false)
       else doNothing()
     }
   }
@@ -143,7 +154,7 @@ object Application extends Controller with BasicStreamer{
     val tweet = status.getText
     //only use english tweets to train the model
     if(LanguageDetector(tweet) == "en") {
-      println(tweet)
+      //println(tweet)
       //extract the features for the model
       //val polarity = ClassifierPolarityDetector(features.text)//LexicalPolarityDetector.getPolarity(features.tokens)
       val features = FeatureExtractor(tweet, ClassifierPolarityDetector(tweet), Twokenizer)
