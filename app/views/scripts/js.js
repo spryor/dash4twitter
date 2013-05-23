@@ -377,7 +377,6 @@ function initializePlaceholders(){
 function initializeKeywordSearch() {
   initStatus("Initializing keyword query functionality.")
   $("#searchKeywordForm").submit(function(){ 
-    $("#nav .commandList a.selected").click();
     var sBox = $(".search_input");
     var contents = sBox.val().trim();
     if(contents != sBox.attr("placeholder").trim() && contents != "") {
