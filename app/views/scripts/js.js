@@ -254,7 +254,13 @@ function addNewTermSentiment(data) {
         .style("fill", function(d) { return color(d.data.label); });
 
       g.append("text")
-        .attr("transform", function(d) { return "translate(" + arc.centroid(d) + ")"; })
+        .attr("transform", function(d) {
+          var a = (d.startAngle + d.endAngle) * 90 / Math.PI - 90;
+          var angle = a > 90 ? a - 180 : a;
+          if(angle == 90) angle = 0; //if there is only one label, make it horizontal
+          return "translate(" + arc.centroid(d) + ")rotate(" + angle +")"; 
+        })
+        //.attr("transform", function(d) { return "translate(" + arc.centroid(d) + ")"; })
         .attr("dy", ".30em")
         .style("text-anchor", "middle")
         .text(function(d) { 
@@ -359,12 +365,12 @@ function initializePlaceholders(){
 
 function initializeKeywordSearch() {
   initStatus("Initializing keyword query functionality.")
-  $("#searchKeywordForm").submit(function(){
-    
+  $("#searchKeywordForm").submit(function(){ 
     $("#nav .commandList a.selected").click();
     var sBox = $(".search_input");
     var contents = sBox.val().trim();
     if(contents != sBox.attr("placeholder").trim() && contents != "") {
+      sBox.val("");
       grabKeywords(contents);
       window.clearInterval(tweetStreamer);
       tweetStreamer = setInterval(streamTweetFromBuffer,10000);
