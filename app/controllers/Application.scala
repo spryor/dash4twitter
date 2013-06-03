@@ -87,7 +87,6 @@ object Application extends Controller with BasicStreamer{
        .toVector
        .filter(_.startsWith("keyword="))
        .map(_.drop(8))
-     //terms.distinct
      val mappings = activeFilters.map(keyword => {
        println("Getting keywords for: "+keyword)
        val queryTerms = keyword.split("\\s+|\\+").map(_.trim)
@@ -125,14 +124,16 @@ object Application extends Controller with BasicStreamer{
        "type" -> rType,
        "data" -> Json.toJson(mappings),
        "sentiment" -> Json.toJson(termSentiment),
-       "filters" -> Json.toJson(filters.keys.toSeq)
+       "filters" -> Json.toJson(filters.keys.toSeq.sorted)
        )
      )
   }
 
   def getKeywords(command: String) = {
-     val terms = command.split(",").map(_.trim.toLowerCase).distinct
-     terms.foreach(filterOption => addFilter(keywordFilter, filterOption))
+     command.split(",")
+       .map(_.trim.toLowerCase)
+       .distinct
+       .foreach(filterOption => addFilter(keywordFilter, filterOption))
      refreshData()
   }  
 
@@ -154,23 +155,15 @@ object Application extends Controller with BasicStreamer{
     val tweet = status.getText
     //only use english tweets to train the model
     if(LanguageDetector(tweet) == "en") {
-      //println(tweet)
       //extract the features for the model
-      //val polarity = ClassifierPolarityDetector(features.text)//LexicalPolarityDetector.getPolarity(features.tokens)
       val features = FeatureExtractor(tweet, ClassifierPolarityDetector(tweet), Twokenizer)
       //update the model
       Model.update(features)
       //if a tweet filters correctly, add it to the model
-      //val label = ClassifierPolarityDetector(features.text)//LexicalPolarityDetector.getPolarity(features.tokens)
       if(filters.size > 0 && filterValidate(features)) {
         println("FILTERED: "+tweet)
-        //val label = ClassifierPolarityDetector(features.text)//LexicalPolarityDetector.getPolarity(features.tokens)
-        if (candidateBuffer.size >= tweetBufferSize) {   
-          candidateBuffer.enqueue((status, features.polarity))
-          candidateBuffer.dequeue
-        } else {
-          candidateBuffer.enqueue((status, features.polarity))
-        }
+        candidateBuffer.enqueue((status, features.polarity))
+        if (candidateBuffer.size >= tweetBufferSize) candidateBuffer.dequeue
       }
     }
   }
